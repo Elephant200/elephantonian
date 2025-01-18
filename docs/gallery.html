@@ -7,7 +7,7 @@
 	<!--CSS for Bootstrap CDN: this will import all of the bootstrap styles-->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 	<link rel = "stylesheet" href = "custom.css">
-	<link rel = "icon" href = "static/logo.png">
+	<link rel = "icon" href = "../static/logo.png">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	<style>
         .img-thumbnail {
@@ -49,7 +49,7 @@
 				const container = $(".gallery-grid");
 				for (let i = 1; i <= imageCount; i++) {
 					const modalId = `elephantModal${i}`;
-					const imageSrc = `static/elephants/${i}.png`;
+					const imageSrc = `../static/elephants/${i}.png`;
 
 					const imageElement = `
 						<div class="gallery-item" data-toggle="modal" data-target="#${modalId}">

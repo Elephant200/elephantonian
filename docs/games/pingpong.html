@@ -127,7 +127,7 @@
             ball.style.top = `${ball.offsetTop + ballSpeedY}px`;
 
             // Ball collision with top and bottom
-            if (ballRect.top <= pingpongRect.top || ballRect.bottom >= pingpongRect.bottom) {
+            if (ball.offsetTop <= 0 || ball.offsetTop + ballSize >= pingpongRect.height) {
                 ballSpeedY *= -1;
             }
 
@@ -149,13 +149,13 @@
             }
 
             // Scoring
-            if (ballRect.left <= pingpongRect.left) {
+            if (ball.offsetLeft <= 0) {
                 rightScore++;
                 scoreRight.textContent = rightScore;
                 resetBall();
             }
 
-            if (ballRect.right >= pingpongRect.right) {
+            if (ball.offsetLeft + ballSize >= pingpongRect.width) {
                 leftScore++;
                 scoreLeft.textContent = leftScore;
                 resetBall();

@@ -108,7 +108,7 @@ main p {
 }
 
 /* Tooltip text */
-.navbar-games ..navbar-games-text {
+.navbar-games .navbar-games-text {
   visibility: hidden;
   width: 120px;
   background-color: #555;

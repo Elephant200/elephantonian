@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset = "utf-8">
+	<meta name = "viewport" content = "width = device-width,initial-scale = 1">
+	<title>Elephantonian</title>
+	<!--CSS for Bootstrap CDN: this will import all of the bootstrap styles-->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel = "icon" href = "../Elephantonian-Logo.png">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+	<link rel = "stylesheet" href = "custom.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.js"></script>
+	
+<body>
+	<div id="navbar"></div>
+	<script>
+	    $(document).ready(function($) {
+	        
+            setTimeout(() => {
+            	$.get("navbar.html", function(data) {
+            		$("#navbar").replaceWith(data);
+            	});
+            },500)
+
+	    });
+	</script>
+	<br/>
+	<!--
+	<div id = "popupwarning" class = "alert alert-primary container">
+		<button type = "button" class = "close" data-dismiss = "alert" aria-label = "Close">
+			<span aria-hidden = "true" class = "text-danger">&times;</span>
+		</button>
+		<strong>Hey!</strong> This is an important message! Read this carefully!<br/>Go to <a href = "Elephantonian/index.html" class = "alert-link" target = "_blank">Elephantonian</a>
+		<a href = "https://www.elephantonian.surge.sh">Stuff</a>
+	</div>
+-->
+	<div id="drawer" style="display: block; margin-left: 15%; width: 50%;">
+	</div>
+
+	<script>
+
+		let paths = [];
+		let painting = false;
+		let next = 0;
+		let current;
+		let previous
+
+		function setup() {
+		  var canvas = createCanvas(windowWidth*0.7, windowHeight*0.75);
+		  canvas.parent("drawer");
+		  current = createVector(0, 0);
+		  previous = createVector(0, 0);
+		}
+
+		function draw() {
+		  background(0, 100, 100);
+		  if (millis() > next && painting) {
+		    current.x = mouseX;
+		    current.y = mouseY;
+		    
+		    let force = p5.Vector.sub(current, previous);
+		    force.mult(0.05);
+
+		    paths[paths.length - 1].add(current, force);
+		    
+		    next = millis() + random(100);
+		    
+		    previous.x = current.x;
+		    previous.y = current.y;
+		    
+		  }
+		  
+		  for (let i = 0; i < paths.length; i++) {
+		    paths[i].update()
+		    paths[i].display()
+		  }
+		}
+
+		function mousePressed() {
+		  next = 0;
+		  painting = true;
+		  previous.x = mouseX;
+		  previous.y = mouseY;
+		  paths.push(new Path());
+		}
+
+		function mouseReleased() {
+		  painting = false;
+		}
+
+		class Path {
+		  constructor() {
+		    this.particles = [];
+		    this.hue = random(100);
+		  }
+		  
+		  add (position, force) {
+		    this.particles.push(new Particle(position, force, this.hue));
+		  }
+		  
+		  update() {
+		    for (let i = 0; i < this.particles.length; i++) {
+		      this.particles[i].update();
+		    }
+		  }
+		  
+		  display () {
+		    for (let i = 0; i < this.particles.length; i++) {
+		      if (this.particles[i].lifespan <= 0) {
+		        this.particles.splice(i, 1);
+		      } else {
+		        this.particles[i].display(this.particles[i+1]);
+		      }
+		    }
+		  }
+		}
+
+		class Particle {
+		  constructor(position, force, hue) {
+		    this.position = createVector(position.x, position.y);
+		    this.velocity = createVector(force.x, force.y);
+		    this.drag = 0.95;
+		    this.lifespan = 255;
+		  }
+		  
+		  update() {
+		    this.position.add(this.velocity);
+		    this.velocity.mult(this.drag);
+		    this.lifespan--;
+		  }
+		  
+		  display(other) {
+		    stroke(0, this.lifespan);
+		    fill(random(255),random(255),random(255), this.lifespan/1.3);
+		    ellipse(this.position.x,this.position.y,16,16);
+		    
+		    if (other) {
+		      line(this.position.x,this.position.y, other.position.x,other.position.y);
+		    }
+		  }
+		}
+
+		function star(x, y, r1, r2, points) {
+		  let angle = TWO_PI / points
+		  let halfangle = angle / 2.0
+		  beginShape()
+		  for (let a = 0; a < TWO_PI; a += angle) {
+		    let sx = x + cos(a) * r2;
+		    let sy = y + sin(a) * r2;
+		    vertex(sx, sy);
+		    sx = x + cos(a + halfangle) * r1;
+		    sy = y + sin(a + halfangle) * r1;
+		    vertex(sx, sy);
+		  }
+		  endShape(CLOSE);
+		}
+
+		function windowResized() {
+			resizeCanvas(windowWidth*0.7, windowHeight*0.75);
+		}
+	</script>
+
+	<script>
+		function alertBox() {
+			alert("hey there");
+		}
+	</script>
+
+	<!--Bootstrap javascript-->
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+	
+</body>
+</html>

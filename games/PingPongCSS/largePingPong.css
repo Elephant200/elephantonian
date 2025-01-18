@@ -1,0 +1,39 @@
+#pingpong {
+	background-color: rgb(50, 50, 100);
+	border: solid white 2px;
+	height: 450px;
+}
+
+#ball {
+	position: relative;
+	width: 20px;
+	height: 20px;
+	background-color: white;
+	border-radius: 50%;
+	border: solid black 2px;
+}
+
+
+
+#left, #right {
+	position: relative;
+	width: 30px;
+	height: 150px;
+	background-color: rgb(0, 128, 0);
+	border: solid white 1px;
+	margin: 5px;
+}
+
+#left {
+	float: left;
+}
+
+#right {
+	float: right;
+}
+
+
+#goal {
+	color: white;
+	display: none;
+}

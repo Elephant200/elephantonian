@@ -56,6 +56,24 @@
     </style>
 </head>
 <body>
+    <div id="navbar"></div>
+    <script>
+        $(document).ready(function ($) {
+            $.get("navbar.html", function (data) {
+                $("#navbar").replaceWith(data);
+            });
+        });
+    </script>
+
+    <div class="container text-center mt-3">
+        <h1>Ping Pong Game</h1>
+        <p class="text-muted">
+            Welcome to the Ping Pong game! Use the <strong>W</strong> and <strong>S</strong> keys to move the left paddle and the <strong>Arrow Up</strong> and <strong>Arrow Down</strong> keys to move the right paddle. Score by hitting the ball past your opponent!
+        </p>
+        <button class="btn btn-success mb-3" id="playButton">Play</button>
+        <button class="btn btn-danger mb-3" id="stopButton" style="display: none;">Stop</button>
+    </div>
+
     <div id="score">
         <span id="scoreLeft">0</span> | <span id="scoreRight">0</span>
     </div>
@@ -161,7 +179,17 @@
             requestAnimationFrame(gameLoop);
         }
 
-        gameLoop();
+        document.getElementById('playButton').addEventListener('click', () => {
+            document.getElementById('playButton').style.display = 'none';
+            document.getElementById('stopButton').style.display = 'inline-block';
+            gameLoop();
+        });
+
+        document.getElementById('stopButton').addEventListener('click', () => {
+            document.getElementById('playButton').style.display = 'inline-block';
+            document.getElementById('stopButton').style.display = 'none';
+            window.cancelAnimationFrame(gameLoop);
+        });
     </script>
 </body>
 </html>

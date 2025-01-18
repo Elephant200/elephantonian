@@ -1,337 +1,167 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset = "utf-8">
-	<meta name = "viewport" content = "width=device-width,initial-scale=1">
-	<title>Games : Ping Pong</title>
-	<!--CSS for Bootstrap CDN: this will import all of the bootstrap styles-->
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-	<link rel = "icon" href = "../../static/logo.png">
-	<!-- my styles -->
-	<link rel = "stylesheet" href="custom.css">
-	<link rel = "stylesheet" href = "PingPongCSS/smallPingPong.css" media="only screen and (max-width: 1000px)">
-	<link rel = "stylesheet" href = "PingPongCSS/largePingPong.css" media="only screen and (min-width: 1000px)">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ping Pong Game</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
 
+        #pingpong {
+            background-color: #323264;
+            position: relative;
+            margin: auto;
+            border: solid white 2px;
+            height: 450px;
+            width: 80%;
+            max-width: 1000px;
+        }
+
+        #ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            border: solid black 2px;
+        }
+
+        #left, #right {
+            position: absolute;
+            width: 20px;
+            height: 100px;
+            background-color: green;
+        }
+
+        #left {
+            left: 0;
+        }
+
+        #right {
+            right: 0;
+        }
+
+        #score {
+            text-align: center;
+            color: white;
+            font-size: 2em;
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
-	
-	<div id = "navbar"></div>
-	<script>
-	    $(document).ready(function($) {
-	        
-            $.get("navbar.html", function(data) {
-            	$("#navbar").replaceWith(data);
-            });
-	    });
-	</script>
+    <div id="score">
+        <span id="scoreLeft">0</span> | <span id="scoreRight">0</span>
+    </div>
 
-	<div class="alert alert-danger alert-dismissible fade show container" role="alert">
-	    <strong style="margin: auto; text-align: center;">Hey there people on small devices!</strong><br/>
-	    If your device <a href="http://howbigismybrowser.com" class="alert-link" target="_blank">is less than 1000 px wide</a>, then this game will NOT work!!!!
-	    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-		    <span aria-hidden="true" class="text-danger">&times;</span>
-		</button>
-	</div>
+    <div id="pingpong">
+        <div id="left" style="top: 175px;"></div>
+        <div id="ball" style="top: 215px; left: 490px;"></div>
+        <div id="right" style="top: 175px;"></div>
+    </div>
 
-	<div class="container">
-		<h1 class="TITLE" style="text-align: center; padding: 0px; margin-bottom: 0px; margin-top: 0px;">Ping Pong</h1>
-		<p class="TEXT text-warning" style="width: 50%; padding: 0px; margin-bottom: 0px; margin-top: 0px;">Welcome to the game of <em>Ping Pong</em>, where two people must play each other to win.<br/><br/><button class="btn btn-success" onclick="play();" id="play" style="margin: auto;">Play!</button>
-		<button id="stop" class="btn btn-danger" onclick="stop();" style="display: none; margin: auto;">Stop!</button></p>
-	</div>
-	<br/>
+    <script>
+        const ball = document.getElementById('ball');
+        const leftPaddle = document.getElementById('left');
+        const rightPaddle = document.getElementById('right');
+        const scoreLeft = document.getElementById('scoreLeft');
+        const scoreRight = document.getElementById('scoreRight');
 
-	<div id="pingpong">
-		<div id="left"></div>
-		<div id="ball"></div>
-		<div id="right"></div>
-		<div style="margin: auto; text-align: center; width: 50%;" class="text-primary">
-			<span id="scoreleft" style="font-size: 200%;">0</span>
-			<span id="separate" style="font-size: 200%;"> | </span>
-			<span id="scoreright" style="font-size: 200%;">0</span>
-			<br/>
-			<span id="goal" style="font-size: 300%;">Goal!</span>
-		</div>
-	</div>
+        let ballSpeedX = 3;
+        let ballSpeedY = 2;
+        const paddleSpeed = 6;
+        const ballSize = 20;
+        const paddleHeight = 100;
 
-		<!--Bootstrap javascript-->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        let leftScore = 0;
+        let rightScore = 0;
 
-	<script src="random.js"></script>
+        const keyState = {};
 
-	
-	<script>
-		/*
-		var right = $("#right");
-		var left = $("#left");
-		var ball = $("#ball");
+        window.addEventListener('keydown', (e) => (keyState[e.key] = true));
+        window.addEventListener('keyup', (e) => (keyState[e.key] = false));
 
-		var center = "" + w / 2 + "px";
+        function movePaddle(paddle, direction) {
+            const currentTop = parseInt(paddle.style.top, 10);
+            const pingpongHeight = document.getElementById('pingpong').clientHeight;
 
-		var playerSpeed = 15;
-		// ball speeds
-		var speedx;
-		var speedy;
-		var balltime = 1;
+            if (direction === 'up' && currentTop > 0) {
+                paddle.style.top = `${currentTop - paddleSpeed}px`;
+            } else if (direction === 'down' && currentTop + paddleHeight < pingpongHeight) {
+                paddle.style.top = `${currentTop + paddleSpeed}px`;
+            }
+        }
 
-		var scoreleft = $("#scoreleft");
-		var scoreright = $("#scoreright");
-		var goal = $("$goal")
+        function moveBall() {
+            const ballRect = ball.getBoundingClientRect();
+            const leftRect = leftPaddle.getBoundingClientRect();
+            const rightRect = rightPaddle.getBoundingClientRect();
+            const pingpongRect = document.getElementById('pingpong').getBoundingClientRect();
 
-		//"ADD THIS CODE IF YOU WANT TO PUT THIS GAME IN AN <iframe>!"
-		var w = window.innerWidth;
-		var h = window.innerHeight;
-		//"DELETE THIS CODE IF YOU WANT TO PUT THIS IN AN <iframe>!"
-		//w = $("#pingpong").css("width");
-		//h = $("#pingpong").css("height");
-		document.getElementById("ball").style.left = "" + w / 2 + "px";
+            // Ball movement
+            ball.style.left = `${ball.offsetLeft + ballSpeedX}px`;
+            ball.style.top = `${ball.offsetTop + ballSpeedY}px`;
 
-		var key = [];
+            // Ball collision with top and bottom
+            if (ballRect.top <= pingpongRect.top || ballRect.bottom >= pingpongRect.bottom) {
+                ballSpeedY *= -1;
+            }
 
-		onkeydown = onkeyup = function(e) {
-			e = e || event
-			key[e.keyCode] = e.type == 'keydown';
-		}
+            // Ball collision with paddles
+            if (
+                ballRect.left <= leftRect.right &&
+                ballRect.bottom >= leftRect.top &&
+                ballRect.top <= leftRect.bottom
+            ) {
+                ballSpeedX *= -1;
+            }
 
-		function keydown() {
-			// down arrow
-			if (key[40]) {
-				if (locationdetect(right.css("top")) + playerSpeed > h - right.css("height")) {
-					right.css("top", h - left.css("height") + "px");
-				} else {
-					right.css("top", locationdetect(right.css("top")) + playerSpeed + "px");
-				}
-			}
-			// up arrow
-			if (key[38]) {
-				if (locationdetect(right.css("top")) - playerSpeed < 0) {
-					right.css("top", "0px");
-				} else {
-					right.css("top", locationdetect(right.css("top")) - playerSpeed + "px");
-				}
-			}
-			// s key
-			if (key[83]) {
-				if (locationdetect(left.css("top")) + playerSpeed > h - left.css("height")) {
-					left.css("top", h - left.css("height") + "px");
-				} else {
-					left.css("top", locationdetect(left.css("top")) + playerSpeed + "px");
-				}
-			}
-			// w arrow
-			if (key[87]) {
-				if (locationdetect(left.css("top")) - playerSpeed < 0) {
-					left.css("top", "0px");
-				} else {
-					left.css("top", locationdetect(left.css("top")) - playerSpeed + "px");
-				}
-			}
-		}
-		speedx = 3;
-		speedy = 1;
-		balltime = 1;
-		ball.css("left", w / 2 + "px");
+            if (
+                ballRect.right >= rightRect.left &&
+                ballRect.bottom >= rightRect.top &&
+                ballRect.top <= rightRect.bottom
+            ) {
+                ballSpeedX *= -1;
+            }
 
-		function ball() {
-			ball.css("left", locationdetect(ball.css("left")) speedx + "px");
-			ball.css("top", locationdetect(ball.css("top")) speedy + "px");
-		}
+            // Scoring
+            if (ballRect.left <= pingpongRect.left) {
+                rightScore++;
+                scoreRight.textContent = rightScore;
+                resetBall();
+            }
 
-		function moveball() {
-			ball();
+            if (ballRect.right >= pingpongRect.right) {
+                leftScore++;
+                scoreLeft.textContent = leftScore;
+                resetBall();
+            }
+        }
 
-			if (h < locationdetect(ball.css("top")) + 20 || locationdetect(ball.css("top")) < 0) {
-				speedy *= -1;
-			}
+        function resetBall() {
+            ball.style.left = '490px';
+            ball.style.top = '215px';
+            ballSpeedX *= -1;
+        }
 
-			if (locationdetect(ball.css("left") > w - 50)) {
-				if (locationdetect(right.css("top")) <= locationdetect(ball.css("top")) + 20 && locationdetect(right.css("top")) + 150 >= locationdetect(ball.css("top"))) {
-					speedx *= -1;
-				} else if (locationdetect(ball.css("left")) >= w - 20) {
-					// left side scores a goal!
-					goal("left");
-				}
-			}
+        function gameLoop() {
+            if (keyState['w']) movePaddle(leftPaddle, 'up');
+            if (keyState['s']) movePaddle(leftPaddle, 'down');
+            if (keyState['ArrowUp']) movePaddle(rightPaddle, 'up');
+            if (keyState['ArrowDown']) movePaddle(rightPaddle, 'down');
 
-			if (locationdetect(ball.css("left") <= 30)) {
-				if (locationdetect(left.css("top")) <= locationdetect(ball.css("top")) + 20 && locationdetect(left.css("top")) + 150 >= locationdetect(ball.css("top"))) {
-					speedx *= -1;
-				} else if (locationdetect(ball.css("left")) <= 0) {
-					// right side scores a goal!
-					goal("right");
-				}
-			}
+            moveBall();
 
-			setTimeout(function() {
-				moveball();
-			}, balltime)
+            requestAnimationFrame(gameLoop);
+        }
 
-			setInterval(function() {
-				keydown();
-			}, 10);
-
-			moveball();
-
-		}
-
-		function goal(size) {
-			goal.css("color", "black");
-
-			setTimeout(function() {
-				goal.css("color", "white");
-			}, 1000);
-
-			if (side == "left") {
-				var newscore = Number(score.html()) + 1;
-				scoreleft.html(newscore);
-			} else {
-				var newscore = Number(score.html()) + 1;
-				scoreright.html(newscore);
-			}
-
-			speedx *= -1;
-			ball.css("left") = w / 2 + "px";
-		}
-		*/
-		
-		var playerSpeed = 5;
-
-		var right = document.getElementById('right');
-		var left = document.getElementById('left');
-		var ball = document.getElementById('ball');
-
-		var scoreleft = document.getElementById('scoreleft');
-		var scoreright = document.getElementById('scoreright');
-		var goal = document.getElementById('goal');
-
-		if (window.innerWidth > 1000) {
-			// large version!
-			var w = window.innerWidth;
-			var h = 450;
-
-			function locationdetect(thing) {
-				return Number(thing.replace("px",""))
-			}
-
-			//internet explorer accommodation
-			var key = [];
-			onkeydown = onkeyup = function(e) {
-				e = e || event;
-				key[e.keyCode] = e.type == 'keydown';
-			}
-
-			function keydown() {
-				//down arrow
-				if (key[40]) {
-					if (locationdetect(right.style.top) + playerSpeed > h - 150) {
-						right.style.top = h - 150 + "px";
-					} else {
-						right.style.top = locationdetect(right.style.top) + playerSpeed + "px";
-					}
-				}
-
-				//up arrow
-				if (key[38]) {
-					if (locationdetect(right.style.top) - playerSpeed < 0) {
-						right.style.top = 0 + "px";
-					} else {
-						right.style.top = locationdetect(right.style.top) - playerSpeed + "px";
-					}
-				}
-
-				//s key
-				if (key[83]) {
-					if (locationdetect(left.style.top) + playerSpeed > h - 150) {
-						left.style.top = h - 150 + "px";
-					} else {
-						left.style.top = locationdetect(left.style.top) + playerSpeed + "px";
-					}
-				}
-
-				//w key
-				if (key[87]) {
-					if (locationdetect(left.style.top) - playerSpeed < 0) {
-						left.style.top = 0 + "px";
-					} else {
-						left.style.top = locationdetect(left.style.top) - playerSpeed + "px";
-					}
-				}
-			}
-
-			var speedx = 3;
-			var speedy = 1;
-			var balltime = 0.0001;
-			ball.style.left = w / 2 + "px";
-
-			function balll() {
-				ball.style.left = locationdetect(ball.style.left) + speedx + "px";
-				ball.style.top = locationdetect(ball.style.top) + speedy + "px";
-			}
-
-			function moveball() {
-				balll();
-
-				if (h < locationdetect(ball.style.top) + 20 || locationdetect(ball.style.top) < 0) {
-					speedy *= -1;
-
-				}
-
-				if (locationdetect(ball.style.left) > w - 50) {
-					if (locationdetect(right.style.top) <= locationdetect(ball.style.top) + 20 && locationdetect(right.style.top) + 150 >= locationdetect(ball.style.top)) {
-
-						speedx *= -1;
-
-					} else if (locationdetect(ball.style.left) >= w - 20) {
-						// left side scores a goal
-						goall('left');
-					}
-				}
-
-
-				if (locationdetect(ball.style.left) <= 30) {
-					if (locationdetect(left.style.top) <= locationdetect(ball.style.top) + 20 && locationdetect(left.style.top) + 150 >= locationdetect(ball.style.top)) {
-
-						speedx *= -1;
-
-					} else if (locationdetect(ball.style.left) <= 0) {
-						// right side scores a goal
-						goall('right');
-					}
-				}
-
-				setTimeout(function() {
-					moveball()
-				}, balltime);
-			}
-
-			setInterval(function() {
-				keydown();
-			},10);
-
-			moveball();
-
-			function goall(side) {
-				$("#goal").fadeIn(0);
-
-				setTimeout(function() {
-					$("#goal").fadeOut(1000);
-				}, 500);
-
-				if (side == 'left') {
-					scoreleft.innerHTML = Number(scoreleft.innerHTML) + 1;
-				} else {
-					scoreright.innerHTML = Number(scoreright.innerHTML) + 1;
-				}
-
-				speedx = speedx * -1;
-				setTimeout(function() {
-					ball.style.left = w / 2 + "px";
-				}, 1000);
-			}
-		}
-
-	</script>
+        gameLoop();
+    </script>
 </body>
 </html>

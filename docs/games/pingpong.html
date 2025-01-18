@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Ping Pong Game</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<link rel = "stylesheet" href = "custom.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <style>
         body {
@@ -18,24 +19,24 @@
             position: relative;
             margin: auto;
             border: solid white 2px;
-            height: 450px;
-            width: 80%;
-            max-width: 1000px;
+            height: 350px;
+            width: 70%;
+            max-width: 800px;
         }
 
         #ball {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 15px;
+            height: 15px;
             background-color: white;
             border-radius: 50%;
-            border: solid black 2px;
+            border: solid black 1px;
         }
 
         #left, #right {
             position: absolute;
-            width: 20px;
-            height: 100px;
+            width: 15px;
+            height: 75px;
             background-color: green;
         }
 
@@ -50,8 +51,20 @@
         #score {
             text-align: center;
             color: white;
-            font-size: 2em;
-            margin: 20px 0;
+            font-size: 1.5em;
+            margin: 10px 0;
+        }
+
+        .container {
+            max-width: 800px;
+        }
+
+        h1 {
+            font-size: 1.8em;
+        }
+
+        p {
+            font-size: 1em;
         }
     </style>
 </head>
@@ -79,9 +92,9 @@
     </div>
 
     <div id="pingpong">
-        <div id="left" style="top: 175px;"></div>
-        <div id="ball" style="top: 215px; left: 490px;"></div>
-        <div id="right" style="top: 175px;"></div>
+        <div id="left" style="top: 137.5px;"></div>
+        <div id="ball" style="top: 167.5px; left: 392.5px;"></div>
+        <div id="right" style="top: 137.5px;"></div>
     </div>
 
     <script>
@@ -91,11 +104,11 @@
         const scoreLeft = document.getElementById('scoreLeft');
         const scoreRight = document.getElementById('scoreRight');
 
-        let ballSpeedX = 3;
-        let ballSpeedY = 2;
-        const paddleSpeed = 6;
-        const ballSize = 20;
-        const paddleHeight = 100;
+        let ballSpeedX = 2;
+        let ballSpeedY = 1;
+        const paddleSpeed = 4;
+        const ballSize = 15;
+        const paddleHeight = 75;
 
         let leftScore = 0;
         let rightScore = 0;
@@ -163,8 +176,8 @@
         }
 
         function resetBall() {
-            ball.style.left = '490px';
-            ball.style.top = '215px';
+            ball.style.left = '392.5px';
+            ball.style.top = '167.5px';
             ballSpeedX *= -1;
         }
 

@@ -5,15 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Ping Pong Game</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-	<link rel = "stylesheet" href = "custom.css">
+    <link rel="stylesheet" href="custom.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-        }
-
         #pingpong {
             background-color: #323264;
             position: relative;
@@ -53,18 +47,6 @@
             color: white;
             font-size: 1.5em;
             margin: 10px 0;
-        }
-
-        .container {
-            max-width: 800px;
-        }
-
-        h1 {
-            font-size: 1.8em;
-        }
-
-        p {
-            font-size: 1em;
         }
     </style>
 </head>
@@ -150,7 +132,7 @@
                 ballRect.bottom >= leftRect.top &&
                 ballRect.top <= leftRect.bottom
             ) {
-                ballSpeedX *= -1;
+                ballSpeedX = Math.abs(ballSpeedX); // Ensure positive direction
             }
 
             if (
@@ -158,7 +140,7 @@
                 ballRect.bottom >= rightRect.top &&
                 ballRect.top <= rightRect.bottom
             ) {
-                ballSpeedX *= -1;
+                ballSpeedX = -Math.abs(ballSpeedX); // Ensure negative direction
             }
 
             // Scoring
@@ -181,6 +163,8 @@
             ballSpeedX *= -1;
         }
 
+        let animationFrame;
+
         function gameLoop() {
             if (keyState['w']) movePaddle(leftPaddle, 'up');
             if (keyState['s']) movePaddle(leftPaddle, 'down');
@@ -189,7 +173,7 @@
 
             moveBall();
 
-            requestAnimationFrame(gameLoop);
+            animationFrame = requestAnimationFrame(gameLoop);
         }
 
         document.getElementById('playButton').addEventListener('click', () => {
@@ -201,7 +185,7 @@
         document.getElementById('stopButton').addEventListener('click', () => {
             document.getElementById('playButton').style.display = 'inline-block';
             document.getElementById('stopButton').style.display = 'none';
-            window.cancelAnimationFrame(gameLoop);
+            cancelAnimationFrame(animationFrame);
         });
     </script>
 </body>

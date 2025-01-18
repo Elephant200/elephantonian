@@ -12,16 +12,18 @@
 	<style>
         .img-thumbnail {
             object-fit: cover;
-            width: 200px;
-            height: 200px;
-            margin: 15px auto;
+            aspect-ratio: 1 / 1;
+            width: 100%;
+            max-width: 200px;
+            height: auto;
+            margin: 0 auto;
             display: block;
         }
 
         .modal-body img {
             object-fit: contain;
             max-width: 100%;
-            max-height: 80vh;
+            max-height: 66vh;
         }
 
         .gallery-grid {
@@ -38,48 +40,54 @@
     </style>
 </head>
 <body>
-	<div id="navbar"></div>
+    <div id="navbar"></div>
 
-	<div class="gallery-grid">
-		<script>
-			$(document).ready(function () {
-				const imageCount = 22;
-				const container = $(".gallery-grid");
-				for (let i = 1; i <= imageCount; i++) {
-					const modalId = `elephantModal${i}`;
-					const imageSrc = `Elephants/${i}.png`;
+    <div class="container">
+        <h1 class="text-center text-lg-left mt-4 mb-0 TITLE">Photo Gallery</h1>
+        <hr class="mt-2 mb-5">
 
-					const imageElement = `
-						<div class="gallery-item" data-toggle="modal" data-target="#${modalId}">
-							<img class="img-fluid img-thumbnail" src="${imageSrc}">
-							<button class="btn btn-primary" data-toggle="modal" data-target="#${modalId}">
-								Zoom in
-							</button>
-						</div>
-						<div class="modal fade" id="${modalId}" tabindex="-1" role="dialog" aria-labelledby="${modalId}Title" aria-hidden="true">
-							<div class="modal-dialog modal-dialog-centered modal-xl" role="document">
-								<div class="modal-content">
-									<div class="modal-header">
-										<h5 class="modal-title" id="${modalId}Title">Image ${i}</h5>
-										<button type="button" class="close btn btn-secondary" data-dismiss="modal" aria-label="Close">
-											<span aria-hidden="true">&times;</span>
-										</button>
-									</div>
-									<div class="modal-body">
-										<img class="img-fluid img-thumbnail" src="${imageSrc}">
-									</div>
-									<div class="modal-footer">
-										<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-									</div>
-								</div>
-							</div>
-						</div>
-					`;
+        <div class="gallery-grid">
+            <!-- Dynamically generated gallery items -->
+            <!-- BEGIN GENERATED IMAGES -->
+            <script>
+                $(document).ready(function () {
+                    const imageCount = 22;
+                    const container = $(".gallery-grid");
+                    for (let i = 1; i <= imageCount; i++) {
+                        const modalId = `elephantModal${i}`;
+                        const imageSrc = `static/elephants/${i}.png`;
 
-					container.append(imageElement);
-				}
-			});
-		</script>
+                        const imageElement = `
+                            <div class="gallery-item" data-toggle="modal" data-target="#${modalId}">
+                                <img class="img-fluid img-thumbnail" src="${imageSrc}">
+                                <button class="btn btn-primary" data-toggle="modal" data-target="#${modalId}">
+                                    Zoom in
+                                </button>
+                            </div>
+                            <div class="modal fade" id="${modalId}" tabindex="-1" role="dialog" aria-labelledby="${modalId}Title" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="${modalId}Title">Image ${i}</h5>
+                                            <button type="button" class="close btn btn-secondary" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <img class="img-fluid img-thumbnail" src="${imageSrc}">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                        container.append(imageElement);
+                    }
+                });
+            </script>
 	</div>
 </div>
 	

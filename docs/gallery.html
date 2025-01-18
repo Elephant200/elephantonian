@@ -41,15 +41,13 @@
 	<div id="navbar"></div>
 
 	<div class="gallery-grid">
-		<!-- Dynamically generated gallery items -->
-		<!-- BEGIN GENERATED IMAGES -->
 		<script>
 			$(document).ready(function () {
 				const imageCount = 22;
 				const container = $(".gallery-grid");
 				for (let i = 1; i <= imageCount; i++) {
 					const modalId = `elephantModal${i}`;
-					const imageSrc = `static/elephants/${i}.png`;
+					const imageSrc = `Elephants/${i}.png`;
 
 					const imageElement = `
 						<div class="gallery-item" data-toggle="modal" data-target="#${modalId}">

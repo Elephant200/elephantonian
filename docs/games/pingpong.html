@@ -1,235 +1,308 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ping Pong Game</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-	<link rel = "icon" href = "../static/logo.png">
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
-	<link rel = "stylesheet" href = "custom.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.js"></script>
-    <style>
-        body {
-            background-color: navy;
-            overflow: hidden; /* Prevent scrolling */
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ping Pong Game</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+  <link rel="icon" href="../static/logo.png" />
+  <link
+    rel="stylesheet"
+    href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+    crossorigin="anonymous"
+  />
+  <link rel="stylesheet" href="custom.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.js"></script>
 
-        #pingpong {
-            background-color: #323264;
-            position: relative;
-            margin: auto;
-            border: solid white 2px;
-            height: 350px;
-            width: 70%;
-            max-width: 800px;
-        }
+  <style>
+    body {
+      background-color: navy;
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* Prevent scrolling */
+    }
+    
+    /* Main game container */
+    #pingpong {
+      /* Fluid width up to a max, maintains aspect ratio for consistent shape */
+      width: 90vw;
+      max-width: 800px;
+      aspect-ratio: 16 / 7; /* 800:350 => 16:7 */
+      
+      position: relative;
+      margin: 1rem auto;
+      border: 2px solid white;
+      background-color: #323264;
+    }
 
-        #ball {
-            position: absolute;
-            width: 15px;
-            height: 15px;
-            background-color: white;
-            border-radius: 50%;
-            border: solid black 1px;
-        }
+    /* Positioning the ball and paddles absolutely inside #pingpong */
+    #ball,
+    #left,
+    #right {
+      position: absolute;
+    }
 
-        #left, #right {
-            position: absolute;
-            width: 15px;
-            height: 75px;
-            background-color: green;
-        }
+    /* Use percentages to let them scale with #pingpong */
+    #ball {
+      width: 2.5%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background-color: white;
+      border: solid 1px black;
+      top: 50%;   /* Center in container at the start */
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
 
-        #left {
-            left: 0;
-        }
+    #left,
+    #right {
+      width: 2%;
+      height: 15%; /* Paddles will be 15% of the container's height */
+      background-color: green;
+      top: 42.5%;  /* Start them roughly mid-container */
+      transform: translateY(-50%);
+    }
 
-        #right {
-            right: 0;
-        }
+    #left {
+      left: 0;
+    }
 
-        #score {
-            text-align: center;
-            color: white;
-            font-size: 1.5em;
-            margin: 10px 0;
-        }
+    #right {
+      right: 0;
+    }
 
-        @media screen and (max-width: 768px) {
-            #pingpong {
-                height: 250px;
-            }
-            #ball {
-                width: 10px;
-                height: 10px;
-            }
-            #left, #right {
-                height: 50px;
-            }
-        }
-    </style>
+    /* Score display */
+    #score {
+      text-align: center;
+      color: white;
+      font-size: 1.5em;
+      margin: 10px 0;
+    }
+
+    /* Responsive font sizes for smaller screens */
+    @media screen and (max-width: 768px) {
+      #score {
+        font-size: 1.2em;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div id="navbar"></div>
-    <div class="container text-center mt-3">
-        <h1 class="TITLE">Ping Pong Game</h1>
-        <p class="TEXT">
-            Welcome to the Ping Pong game! Use the <strong>W</strong> and <strong>S</strong> keys to move the left paddle and the <strong>Arrow Up</strong> and <strong>Arrow Down</strong> keys to move the right paddle. Score by hitting the ball past your opponent!
-        </p>
-        <button class="btn btn-success mb-3" id="playButton">Play</button>
-        <button class="btn btn-danger mb-3" id="stopButton" style="display: none;">Stop</button>
-        <label for="speedSlider" class="TEXT">Ball Speed:</label>
-        <input type="range" id="speedSlider" min="1" max="2" step="0.1" value="1">
-    </div>
+  <div id="navbar"></div>
 
-    <div id="score">
-        <span id="scoreLeft">0</span> | <span id="scoreRight">0</span>
-    </div>
+  <div class="container text-center mt-3">
+    <h1 class="TITLE">Ping Pong Game</h1>
+    <p class="TEXT">
+      Welcome to the Ping Pong game! Use the
+      <strong>W</strong> and <strong>S</strong> keys to move the left paddle
+      and the <strong>Arrow Up</strong> and <strong>Arrow Down</strong> keys to
+      move the right paddle. Score by hitting the ball past your opponent!
+    </p>
+    <button class="btn btn-success mb-3" id="playButton">Play</button>
+    <button class="btn btn-danger mb-3" id="stopButton" style="display: none;">Stop</button>
+    <label for="speedSlider" class="TEXT">Ball Speed:</label>
+    <input type="range" id="speedSlider" min="1" max="2" step="0.1" value="1" />
+  </div>
 
-    <div id="pingpong">
-        <div id="left" style="top: 137.5px;"></div>
-        <div id="ball" style="top: 167.5px; left: 392.5px;"></div>
-        <div id="right" style="top: 137.5px;"></div>
-    </div>
+  <div id="score">
+    <span id="scoreLeft">0</span> | <span id="scoreRight">0</span>
+  </div>
 
-    <script>
-	    $(document).ready(function($) {
-	        
-            setTimeout(() => {
-            	$.get("navbar.html", function(data) {
-            		$("#navbar").replaceWith(data);
-            	});
-            },500)
+  <div id="pingpong">
+    <!--
+      Note: We no longer set explicit "style" on these elements because
+      we want them to position themselves with our percentage-based CSS.
+    -->
+    <div id="left"></div>
+    <div id="ball"></div>
+    <div id="right"></div>
+  </div>
 
-	    });
-	</script>
-    <script>
-        const ball = document.getElementById('ball');
-        const leftPaddle = document.getElementById('left');
-        const rightPaddle = document.getElementById('right');
-        const scoreLeft = document.getElementById('scoreLeft');
-        const scoreRight = document.getElementById('scoreRight');
-
-        let ballSpeedX = 2;
-        let ballSpeedY = 1;
-        const paddleSpeed = 4;
-        const ballSize = 15;
-        const paddleHeight = 75;
-
-        let leftScore = 0;
-        let rightScore = 0;
-
-        const keyState = {};
-
-        window.addEventListener('keydown', (e) => {
-            keyState[e.key] = true;
-            if (['ArrowUp', 'ArrowDown'].includes(e.key)) e.preventDefault();
+  <script>
+    // Load navbar asynchronously
+    $(document).ready(function() {
+      setTimeout(() => {
+        $.get("navbar.html", function(data) {
+          $("#navbar").replaceWith(data);
         });
+      }, 500);
+    });
 
-        window.addEventListener('keyup', (e) => (keyState[e.key] = false));
+    const pingpong = document.getElementById('pingpong');
+    const ball = document.getElementById('ball');
+    const leftPaddle = document.getElementById('left');
+    const rightPaddle = document.getElementById('right');
+    const scoreLeft = document.getElementById('scoreLeft');
+    const scoreRight = document.getElementById('scoreRight');
 
-        function movePaddle(paddle, direction) {
-            const currentTop = parseInt(paddle.style.top, 10);
-            const pingpongHeight = document.getElementById('pingpong').clientHeight;
+    // We'll store actual numeric speeds and sizes in these variables,
+    // which get recalculated from the element sizes.
+    let ballSpeedX = 2; // These will get scaled by the speed slider too
+    let ballSpeedY = 1;
+    let paddleSpeed = 4;
 
-            if (direction === 'up' && currentTop > 0) {
-                paddle.style.top = `${currentTop - paddleSpeed}px`;
-            } else if (direction === 'down' && currentTop + paddleHeight < pingpongHeight) {
-                paddle.style.top = `${currentTop + paddleSpeed}px`;
-            }
-        }
+    // We'll detect actual element sizes in the game loop,
+    // so we don't need hard-coded ballSize or paddleHeight.
+    // But let's keep a reference for collisions:
+    let ballSize = 0; // Will be updated from getBoundingClientRect
+    let paddleHeight = 0; // Same
 
-        function moveBall() {
-            const ballRect = ball.getBoundingClientRect();
-            const leftRect = leftPaddle.getBoundingClientRect();
-            const rightRect = rightPaddle.getBoundingClientRect();
-            const pingpongRect = document.getElementById('pingpong').getBoundingClientRect();
+    let leftScore = 0;
+    let rightScore = 0;
 
-            ball.style.left = `${ball.offsetLeft + ballSpeedX}px`;
-            ball.style.top = `${ball.offsetTop + ballSpeedY}px`;
+    const keyState = {};
 
-            if (ball.offsetTop <= 0 || ball.offsetTop + ballSize >= pingpongRect.height) {
-                ballSpeedY *= -1;
-            }
+    // Listen for keydown/keyup
+    window.addEventListener('keydown', (e) => {
+      keyState[e.key] = true;
+      // Prevent scrolling with arrow keys
+      if (['ArrowUp', 'ArrowDown'].includes(e.key)) e.preventDefault();
+    });
+    window.addEventListener('keyup', (e) => {
+      keyState[e.key] = false;
+    });
 
-            if (
-                ballRect.left <= leftRect.right &&
-                ballRect.bottom >= leftRect.top &&
-                ballRect.top <= leftRect.bottom
-            ) {
-                ballSpeedX = Math.abs(ballSpeedX);
-            }
+    function getNumericStyle(el, prop) {
+      // read computed style, parse as float
+      return parseFloat(window.getComputedStyle(el).getPropertyValue(prop));
+    }
 
-            if (
-                ballRect.right >= rightRect.left &&
-                ballRect.bottom >= rightRect.top &&
-                ballRect.top <= rightRect.bottom
-            ) {
-                ballSpeedX = -Math.abs(ballSpeedX);
-            }
+    function movePaddle(paddle, direction) {
+      const currentTop = paddle.offsetTop; // top in px relative to #pingpong
+      const containerHeight = pingpong.clientHeight;
 
-            if (ball.offsetLeft <= 0) {
-                rightScore++;
-                scoreRight.textContent = rightScore;
-                resetBall();
-            }
+      // We'll refresh the actual paddleHeight each frame
+      if (direction === 'up' && currentTop > 0) {
+        // Move up
+        paddle.style.top = (currentTop - paddleSpeed) + 'px';
+      } else if (direction === 'down' && currentTop + paddleHeight < containerHeight) {
+        // Move down
+        paddle.style.top = (currentTop + paddleSpeed) + 'px';
+      }
+    }
 
-            if (ball.offsetLeft + ballSize >= pingpongRect.width) {
-                leftScore++;
-                scoreLeft.textContent = leftScore;
-                resetBall();
-            }
-        }
+    function moveBall() {
+      // Update these in case the container has changed size
+      ballSize = ball.clientWidth; // ball is square
+      paddleHeight = leftPaddle.clientHeight;
 
-        function resetBall() {
-            ball.style.left = '392.5px';
-            ball.style.top = '167.5px';
-            ballSpeedX *= -1;
-        }
+      // Where is the ball now?
+      const currentLeft = ball.offsetLeft;
+      const currentTop = ball.offsetTop;
+      const containerWidth = pingpong.clientWidth;
+      const containerHeight = pingpong.clientHeight;
 
-        let animationFrame;
+      // Move it
+      ball.style.left = (currentLeft + ballSpeedX) + 'px';
+      ball.style.top = (currentTop + ballSpeedY) + 'px';
 
-        function gameLoop() {
-            if (keyState['w']) movePaddle(leftPaddle, 'up');
-            if (keyState['s']) movePaddle(leftPaddle, 'down');
-            if (keyState['ArrowUp']) movePaddle(rightPaddle, 'up');
-            if (keyState['ArrowDown']) movePaddle(rightPaddle, 'down');
+      // Collide with top/bottom
+      if (currentTop <= 0 || currentTop + ballSize >= containerHeight) {
+        ballSpeedY *= -1;
+      }
 
-            moveBall();
+      // Gather bounding boxes
+      const ballRect = ball.getBoundingClientRect();
+      const leftRect = leftPaddle.getBoundingClientRect();
+      const rightRect = rightPaddle.getBoundingClientRect();
+      const containerRect = pingpong.getBoundingClientRect();
 
-            animationFrame = requestAnimationFrame(gameLoop);
-        }
+      // Simple collision with left paddle
+      // Check if the ball's left side is <= paddle's right side
+      // AND that the ball is vertically in range
+      if (
+        ballRect.left <= leftRect.right &&
+        ballRect.bottom >= leftRect.top &&
+        ballRect.top <= leftRect.bottom
+      ) {
+        ballSpeedX = Math.abs(ballSpeedX);
+      }
 
-        document.getElementById('playButton').addEventListener('click', () => {
-            document.getElementById('playButton').style.display = 'none';
-            document.getElementById('stopButton').style.display = 'inline-block';
-            gameLoop();
-        });
+      // Simple collision with right paddle
+      if (
+        ballRect.right >= rightRect.left &&
+        ballRect.bottom >= rightRect.top &&
+        ballRect.top <= rightRect.bottom
+      ) {
+        ballSpeedX = -Math.abs(ballSpeedX);
+      }
 
-        document.getElementById('stopButton').addEventListener('click', () => {
-            document.getElementById('playButton').style.display = 'inline-block';
-            document.getElementById('stopButton').style.display = 'none';
-            cancelAnimationFrame(animationFrame);
-        });
+      // If ball goes off left edge => right player scores
+      if (currentLeft <= 0) {
+        rightScore++;
+        scoreRight.textContent = rightScore;
+        resetBall();
+      }
 
-        const speedSlider = document.getElementById('speedSlider');
-        speedSlider.addEventListener('input', () => {
-            ballSpeedX = Math.sign(ballSpeedX) * speedSlider.value * 2;
-            ballSpeedY = Math.sign(ballSpeedY) * speedSlider.value;
-        });
+      // If ball goes off right edge => left player scores
+      if (currentLeft + ballSize >= containerWidth) {
+        leftScore++;
+        scoreLeft.textContent = leftScore;
+        resetBall();
+      }
+    }
 
-        function adjustFontSizes() {
-            const scaleFactorWidth = window.innerWidth / 800;
-            const scaleFactorHeight = window.innerHeight / 600;
-            const scaleFactor = Math.min(scaleFactorWidth, scaleFactorHeight);
-            document.querySelector('.TITLE').style.fontSize = `${2 * scaleFactor}em`;
-            document.querySelector('.TEXT').style.fontSize = `${1.5 * scaleFactor}em`;
-        }
+    function resetBall() {
+      // Just place the ball in center again
+      // We'll let the CSS (width: 2.5%) pick up the size
+      // so we just need to place it at 50%/50% with a negative translation.
+      ball.style.left = '50%';
+      ball.style.top = '50%';
+      // Reverse X direction
+      ballSpeedX *= -1;
+    }
 
-        window.addEventListener('resize', adjustFontSizes);
-        adjustFontSizes();
-    </script>
+    let animationFrame;
+    function gameLoop() {
+      // Check keys for paddles
+      if (keyState['w']) movePaddle(leftPaddle, 'up');
+      if (keyState['s']) movePaddle(leftPaddle, 'down');
+      if (keyState['ArrowUp']) movePaddle(rightPaddle, 'up');
+      if (keyState['ArrowDown']) movePaddle(rightPaddle, 'down');
+
+      moveBall();
+
+      animationFrame = requestAnimationFrame(gameLoop);
+    }
+
+    document.getElementById('playButton').addEventListener('click', () => {
+      document.getElementById('playButton').style.display = 'none';
+      document.getElementById('stopButton').style.display = 'inline-block';
+      gameLoop();
+    });
+
+    document.getElementById('stopButton').addEventListener('click', () => {
+      document.getElementById('playButton').style.display = 'inline-block';
+      document.getElementById('stopButton').style.display = 'none';
+      cancelAnimationFrame(animationFrame);
+    });
+
+    // Speed slider changes ballSpeedX and ballSpeedY proportionally
+    const speedSlider = document.getElementById('speedSlider');
+    speedSlider.addEventListener('input', () => {
+      // The ballSpeedX has to remain positive or negative depending on direction,
+      // so we keep its sign and multiply by slider value * some factor.
+      const speedFactor = speedSlider.value;
+      ballSpeedX = Math.sign(ballSpeedX) * speedFactor * 2;
+      ballSpeedY = Math.sign(ballSpeedY) * speedFactor;
+    });
+
+    // Adjust fonts slightly based on viewport size
+    function adjustFontSizes() {
+      const scaleFactorWidth = window.innerWidth / 800;
+      const scaleFactorHeight = window.innerHeight / 600;
+      const scaleFactor = Math.min(scaleFactorWidth, scaleFactorHeight);
+
+      document.querySelector('.TITLE').style.fontSize = (2 * scaleFactor) + 'em';
+      // Because there might be more than one element with class="TEXT",
+      // let’s just do a loop:
+      document.querySelectorAll('.TEXT').forEach(el => {
+        el.style.fontSize = (1.5 * scaleFactor) + 'em';
+      });
+    }
+    window.addEventListener('resize', adjustFontSizes);
+    adjustFontSizes();
+  </script>
 </body>
 </html>

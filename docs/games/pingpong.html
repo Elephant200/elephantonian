@@ -4,7 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Ping Pong Game</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel = "icon" href = "../static/logo.png">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+	<link rel = "stylesheet" href = "custom.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.js"></script>
     <style>
         body {
             background-color: navy;
@@ -67,6 +72,7 @@
     </style>
 </head>
 <body>
+    <div id="navbar"></div>
     <div class="container text-center mt-3">
         <h1 class="TITLE">Ping Pong Game</h1>
         <p class="TEXT">
@@ -88,6 +94,17 @@
         <div id="right" style="top: 137.5px;"></div>
     </div>
 
+    <script>
+	    $(document).ready(function($) {
+	        
+            setTimeout(() => {
+            	$.get("navbar.html", function(data) {
+            		$("#navbar").replaceWith(data);
+            	});
+            },500)
+
+	    });
+	</script>
     <script>
         const ball = document.getElementById('ball');
         const leftPaddle = document.getElementById('left');
@@ -204,7 +221,9 @@
         });
 
         function adjustFontSizes() {
-            const scaleFactor = window.innerWidth / 800;
+            const scaleFactorWidth = window.innerWidth / 800;
+            const scaleFactorHeight = window.innerHeight / 600;
+            const scaleFactor = Math.min(scaleFactorWidth, scaleFactorHeight);
             document.querySelector('.TITLE').style.fontSize = `${2 * scaleFactor}em`;
             document.querySelector('.TEXT').style.fontSize = `${1.5 * scaleFactor}em`;
         }

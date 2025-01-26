@@ -25,6 +25,10 @@
       background-color: navy;
     }
 
+    h1, p { 
+        margin: 0; 
+    }
+
     /* Flex container for the entire page */
     .page-wrapper {
       display: flex;
@@ -63,7 +67,7 @@
        The width auto-adjusts to keep the ratio.
     */
     #pingpong {
-      aspect-ratio: 16 / 7; 
+      aspect-ratio: 16 / 9; 
       height: 100%;
       max-width: 100%;         /* Don’t exceed available width */
       background-color: #323264;
@@ -141,13 +145,19 @@
   </div>
 
   <script>
-    // Async load of navbar
+    // Compute height of navbar after it loads, then adjust pageWrapper height accordingly
     $(document).ready(function() {
-      setTimeout(() => {
         $.get("navbar.html", function(data) {
-          $("#navbar").replaceWith(data);
+            $("#navbar").replaceWith(data);
+
+            const navbarElement = document.querySelector("nav");
+            const navbarHeight = navbarElement ? navbarElement.offsetHeight : 0;
+
+            const pageWrapper = document.querySelector(".page-wrapper");
+            if (pageWrapper) {
+            pageWrapper.style.height = `calc(100% - ${navbarHeight}px)`;
+            }
         });
-      }, 500);
     });
 
     const pingpong = document.getElementById('pingpong');

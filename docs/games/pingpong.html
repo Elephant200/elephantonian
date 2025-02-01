@@ -173,27 +173,21 @@
   </div>
 
   <script>
-    // 1. Load navbar asynchronously
     $(document).ready(function() {
-      // Example: if you want to measure the navbar’s height after it loads:
       $.get("navbar.html", function(data) {
-        // Insert the navbar
         $("#navbar").replaceWith(data);
 
-        // If you need to measure the final navbar height and adjust page-wrapper:
         const navElem = document.querySelector("nav");
         if (navElem) {
           const navHeight = navElem.offsetHeight; 
           const pageWrapper = document.querySelector(".page-wrapper");
           if (pageWrapper) {
-            // Subtract nav height from 100%
             pageWrapper.style.height = `calc(100% - ${navHeight}px)`;
           }
         }
       });
     });
 
-    // 2. Ping pong game logic
     const pingpong = document.getElementById('pingpong');
     const ball = document.getElementById('ball');
     const leftPaddle = document.getElementById('left');
@@ -212,23 +206,19 @@
 
     window.addEventListener('keydown', (e) => {
       keyState[e.key] = true;
-      // Prevent arrow keys from scrolling
       if (['ArrowUp', 'ArrowDown'].includes(e.key)) e.preventDefault();
     });
     window.addEventListener('keyup', (e) => {
       keyState[e.key] = false;
     });
 
-    // Touch control variables
     let touchY = null;
     let activePaddle = null;
 
-    // Handle touch controls
     pingpong.addEventListener('touchstart', (e) => {
       e.preventDefault();
       const touch = e.touches[0];
       touchY = touch.clientY;
-      // Determine which paddle to control based on touch position
       const halfWidth = pingpong.clientWidth / 2;
       activePaddle = touch.clientX < halfWidth ? leftPaddle : rightPaddle;
     });
@@ -254,7 +244,6 @@
       activePaddle = null;
     });
 
-    // Move a paddle by "paddleSpeed" up/down, within #pingpong
     function movePaddle(paddle, direction) {
       const currentTop = parseInt(paddle.style.top) || paddle.offsetTop;
       const containerHeight = pingpong.clientHeight;
@@ -272,76 +261,61 @@
       paddle.style.top = newTop + 'px';
     }
 
-    // Use only offset-based logic for collisions
     function moveBall() {
-      // Current position
       const currentLeft = ball.offsetLeft;
       const currentTop = ball.offsetTop;
 
-      // Container size
       const containerWidth = pingpong.clientWidth;
       const containerHeight = pingpong.clientHeight;
 
-      // Ball size
       const ballWidth = ball.clientWidth;
       const ballHeight = ball.clientHeight;
 
-      // Update ball position
       ball.style.left = (currentLeft + ballSpeedX) + 'px';
       ball.style.top = (currentTop + ballSpeedY) + 'px';
 
-      // Check top/bottom bounce
       if (ball.offsetTop <= 0 || (ball.offsetTop + ballHeight) >= containerHeight) {
         ballSpeedY *= -1;
       }
 
-      // Ball edges
       const ballLeft = ball.offsetLeft;
       const ballRight = ballLeft + ballWidth;
       const ballTop = ball.offsetTop;
       const ballBottom = ballTop + ballHeight;
 
-      // Left paddle edges
       const leftLeft = leftPaddle.offsetLeft;
       const leftRight = leftLeft + leftPaddle.clientWidth;
       const leftTop = leftPaddle.offsetTop;
       const leftBottom = leftTop + leftPaddle.clientHeight;
 
-      // Right paddle edges
       const rightLeft = rightPaddle.offsetLeft;
       const rightRight = rightLeft + rightPaddle.clientWidth;
       const rightTop = rightPaddle.offsetTop;
       const rightBottom = rightTop + rightPaddle.clientHeight;
 
-      // Collision with Left Paddle?
       if (
         ballLeft <= leftRight &&
         ballRight >= leftLeft &&
         ballBottom >= leftTop &&
         ballTop <= leftBottom
       ) {
-        // Ensure ball goes to the right
         ballSpeedX = Math.abs(ballSpeedX);
       }
 
-      // Collision with Right Paddle?
       if (
         ballRight >= rightLeft &&
         ballLeft <= rightRight &&
         ballBottom >= rightTop &&
         ballTop <= rightBottom
       ) {
-        // Ensure ball goes to the left
         ballSpeedX = -Math.abs(ballSpeedX);
       }
 
-      // If ball goes off left edge => Right scores
       if (ballLeft <= 0) {
         rightScore++;
         scoreRight.textContent = rightScore;
         resetBall();
       }
-      // If ball goes off right edge => Left scores
       if (ballRight >= containerWidth) {
         leftScore++;
         scoreLeft.textContent = leftScore;
@@ -350,7 +324,6 @@
     }
 
     function resetBall() {
-      // Place the ball in the center
       ball.style.left = '50%';
       ball.style.top = '50%';
       // Reverse X direction
@@ -359,20 +332,16 @@
 
     let animationFrame;
     function gameLoop() {
-      // Paddle movement
       if (keyState['w']) movePaddle(leftPaddle, 'up');
       if (keyState['s']) movePaddle(leftPaddle, 'down');
       if (keyState['ArrowUp']) movePaddle(rightPaddle, 'up');
       if (keyState['ArrowDown']) movePaddle(rightPaddle, 'down');
 
-      // Move the ball
       moveBall();
 
-      // Loop
       animationFrame = requestAnimationFrame(gameLoop);
     }
 
-    // Play / Stop
     const playButton = document.getElementById('playButton');
     const stopButton = document.getElementById('stopButton');
 

@@ -98,6 +98,8 @@
         <h1 class="text-center text-lg-left mt-4 mb-0 TITLE">Photo Gallery</h1>
         <hr class="mt-2 mb-5">
 
+        <!-- Commented out search bar -->
+        <!--
         <div class="search-container mb-4">
             <input type="text" id="imageSearch" class="form-control" placeholder="Search images by caption or description...">
             <div id="searchFilters" class="mt-2">
@@ -106,9 +108,11 @@
                 <button class="btn btn-sm btn-outline-primary m-1" data-tag="wild">Wild</button>
             </div>
         </div>
+        -->
         <div class="gallery-grid">
             <script>
                 // Captions for images
+                /*
                 const captions = {
                     1: "Majestic African Elephant in the Savanna",
                     2: "Baby Elephant Playing with Water",
@@ -132,16 +136,19 @@
                     20: "Herd Moving Through Grassland",
                     21: "Elephant Portrait Side View",
                     22: "Family Bond - Mother and Calves"
-                };
+                };*/
 
                 for(let i = 1; i <= 22; i++) {
                     document.write(`
                         <div class="col-lg-3 col-md-4 col-6 mb-4 gallery-item">
                             <img class="img-fluid img-thumbnail" src="static/elephants/${i}.png" alt="Elephant Image ${i}" style="width: 200px; height: 200px; object-fit: cover;">
-                            <p class="text-center">${captions[i] || ""}</p> <button data-toggle="modal" data-target="#modal${i}" style="margin: auto; display: block;">
+                            <p class="text-center">${captions[i] || ""}</p>
+                            <button class="btn btn-primary m-2" data-toggle="modal" data-target="#modal${i}" style="margin: auto; display: block;">
                                 Zoom in
                             </button>
-                            <button class="download-button" data-image-id="${i}">Download</button>
+                            <a href="static/elephants/${i}.png" download="elephant${i}.png" class="btn btn-success m-2" style="margin: auto; display: block;">
+                                Download
+                            </a>
                             <div class="modal fade" id="modal${i}" tabindex="-1" role="dialog" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered modal-xl">
                                     <div class="modal-content">
@@ -176,12 +183,8 @@
             	$("#navbar").replaceWith(data);
             });
 
-            // Placeholder for image download functionality
-            $(".download-button").click(function() {
-                let imageId = $(this).data("image-id");
-                // Add your download logic here
-                alert(`Downloading image ${imageId}`);
-            });
+
+            // Removed unnecessary download-button click handler
 
             let activeFilters = new Set();
 
@@ -203,11 +206,11 @@
                 $(".gallery-item").each(function() {
                     let caption = $(this).find("p").text().toLowerCase();
                     let tags = $(this).data('tags') ? $(this).data('tags').split(',') : [];
-                    
+
                     let matchesSearch = caption.includes(searchTerm);
                     let matchesFilters = activeFilters.size === 0 || 
                         [...activeFilters].some(filter => tags.includes(filter));
-                    
+
                     $(this).toggle(matchesSearch && matchesFilters);
                 });
             }

@@ -46,15 +46,27 @@
         <h1 class="text-center text-lg-left mt-4 mb-0 TITLE">Photo Gallery</h1>
         <hr class="mt-2 mb-5">
 
+        <div class="search-container mb-4">
+        <input type="text" id="imageSearch" class="form-control" placeholder="Search images...">
+    </div>
         <div class="gallery-grid">
             <script>
+                const captions = {
+                    1: "Majestic African Elephant in the Savanna",
+                    2: "Baby Elephant Playing with Water",
+                    3: "Elephant Herd Migration",
+                    // Add more captions for other images
+                    22: "Elephant Family Bond"
+                };
+
                 for(let i = 1; i <= 22; i++) {
                     document.write(`
-                        <div class="col-lg-3 col-md-4 col-6 mb-4">
-                            <img class="img-fluid img-thumbnail" src="Elephants/${i}.png" style="width: 200px; height: 200px; object-fit: cover;">
-                            <button data-toggle="modal" data-target="#modal${i}" style="margin: auto; display: block;">
+                        <div class="col-lg-3 col-md-4 col-6 mb-4 gallery-item">
+                            <img class="img-fluid img-thumbnail" src="Elephants/${i}.png" alt="Elephant Image ${i}" style="width: 200px; height: 200px; object-fit: cover;">
+                            <p class="text-center">${captions[i] || ""}</p> <button data-toggle="modal" data-target="#modal${i}" style="margin: auto; display: block;">
                                 Zoom in
                             </button>
+                            <button class="download-button" data-image-id="${i}">Download</button>
                             <div class="modal fade" id="modal${i}" tabindex="-1" role="dialog" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered modal-xl">
                                     <div class="modal-content">
@@ -65,7 +77,7 @@
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            <img class="img-fluid img-thumbnail" src="Elephants/${i}.png" style="width: 80%;">
+                                            <img class="img-fluid img-thumbnail" src="Elephants/${i}.png" alt="Elephant Image ${i}" style="width: 80%;">
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -78,15 +90,36 @@
                 }
             </script>
 	</div>
-</div>
-	
+    </div>
+
+    <button id="backToTop">Back to Top</button>  <!-- Placeholder for Back to Top Button -->
+
 	<script>
 	    $(document).ready(function($) {
-	        
+
             $.get("navbar.html", function(data) {
             	$("#navbar").replaceWith(data);
             });
-            
+
+            // Placeholder for image download functionality
+            $(".download-button").click(function() {
+                let imageId = $(this).data("image-id");
+                // Add your download logic here
+                alert(`Downloading image ${imageId}`);
+            });
+
+            $("#imageSearch").on("keyup", function() {
+                let searchTerm = $(this).val().toLowerCase();
+                $(".gallery-item").each(function() {
+                    let caption = $(this).find("p").text().toLowerCase();
+                    if (caption.includes(searchTerm)) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+
 	    });
 	</script>
 	<!--Bootstrap javascript-->
@@ -94,6 +127,6 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
-	
+
 </body>
 </html>

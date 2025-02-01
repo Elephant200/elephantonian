@@ -47,8 +47,13 @@
         <hr class="mt-2 mb-5">
 
         <div class="search-container mb-4">
-        <input type="text" id="imageSearch" class="form-control" placeholder="Search images...">
-    </div>
+            <input type="text" id="imageSearch" class="form-control" placeholder="Search images by caption or description...">
+            <div id="searchFilters" class="mt-2">
+                <button class="btn btn-sm btn-outline-primary m-1" data-tag="baby">Baby Elephants</button>
+                <button class="btn btn-sm btn-outline-primary m-1" data-tag="family">Family</button>
+                <button class="btn btn-sm btn-outline-primary m-1" data-tag="wild">Wild</button>
+            </div>
+        </div>
         <div class="gallery-grid">
             <script>
                 const captions = {
@@ -108,17 +113,34 @@
                 alert(`Downloading image ${imageId}`);
             });
 
-            $("#imageSearch").on("keyup", function() {
-                let searchTerm = $(this).val().toLowerCase();
+            let activeFilters = new Set();
+
+            $("#searchFilters button").click(function() {
+                $(this).toggleClass('btn-outline-primary btn-primary');
+                let tag = $(this).data('tag');
+                if (activeFilters.has(tag)) {
+                    activeFilters.delete(tag);
+                } else {
+                    activeFilters.add(tag);
+                }
+                filterImages();
+            });
+
+            $("#imageSearch").on("keyup", filterImages);
+
+            function filterImages() {
+                let searchTerm = $("#imageSearch").val().toLowerCase();
                 $(".gallery-item").each(function() {
                     let caption = $(this).find("p").text().toLowerCase();
-                    if (caption.includes(searchTerm)) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
+                    let tags = $(this).data('tags') ? $(this).data('tags').split(',') : [];
+                    
+                    let matchesSearch = caption.includes(searchTerm);
+                    let matchesFilters = activeFilters.size === 0 || 
+                        [...activeFilters].some(filter => tags.includes(filter));
+                    
+                    $(this).toggle(matchesSearch && matchesFilters);
                 });
-            });
+            }
 
 	    });
 	</script>

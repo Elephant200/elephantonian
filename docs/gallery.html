@@ -32,10 +32,11 @@
 
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-            padding: 2rem;
-            width: 90%;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
+            width: 95%;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -47,7 +48,6 @@
             background: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
             width: 100%;
-            min-width: 300px;
         }
 
         .gallery-item p {

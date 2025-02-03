@@ -109,67 +109,67 @@
             </div>
         </div>
         -->
-        <div class="gallery-grid">
-            <script>
-                // Captions for images
-                const captions = {
-                    1: "Majestic African Elephant in the Savanna",
-                    2: "Baby Elephant Playing with Water",
-                    3: "Elephant Herd Migration at Sunset",
-                    4: "Mother Elephant with Baby Calf",
-                    5: "Bull Elephant Displaying Tusks",
-                    6: "Elephants at the Watering Hole",
-                    7: "Young Elephants Playing Together",
-                    8: "Elephant Family Walking Through Plains",
-                    9: "Close-up of Elephant's Eye",
-                    10: "Elephant Spraying Water",
-                    11: "Two Elephants Greeting Each Other",
-                    12: "Baby Elephant Learning to Use Trunk",
-                    13: "Elephant Herd Protecting Young",
-                    14: "Elephant in Dense Forest",
-                    15: "Elephants Crossing River",
-                    16: "Elephant Dust Bath",
-                    17: "Mother and Baby Walking Together",
-                    18: "Elephant Among Trees",
-                    19: "Elephant Reaching for Branches",
-                    20: "Herd Moving Through Grassland",
-                    21: "Elephant Portrait Side View",
-                    22: "Family Bond - Mother and Calves"
-                };
+    <div class="gallery-grid">
+        <script>
+            // Captions for images
+            const captions = {
+                1: "Majestic African Elephant in the Savanna",
+                2: "Baby Elephant Playing with Water",
+                3: "Elephant Herd Migration at Sunset",
+                4: "Mother Elephant with Baby Calf",
+                5: "Bull Elephant Displaying Tusks",
+                6: "Elephants at the Watering Hole",
+                7: "Young Elephants Playing Together",
+                8: "Elephant Family Walking Through Plains",
+                9: "Close-up of Elephant's Eye",
+                10: "Elephant Spraying Water",
+                11: "Two Elephants Greeting Each Other",
+                12: "Baby Elephant Learning to Use Trunk",
+                13: "Elephant Herd Protecting Young",
+                14: "Elephant in Dense Forest",
+                15: "Elephants Crossing River",
+                16: "Elephant Dust Bath",
+                17: "Mother and Baby Walking Together",
+                18: "Elephant Among Trees",
+                19: "Elephant Reaching for Branches",
+                20: "Herd Moving Through Grassland",
+                21: "Elephant Portrait Side View",
+                22: "Family Bond - Mother and Calves"
+            };
 
-                for(let i = 1; i <= 22; i++) {
-                    document.write(`
-                        <div class="col-lg-3 col-md-4 col-6 mb-4 gallery-item">
-                            <img class="img-fluid img-thumbnail" src="static/elephants/${i}.png" alt="Elephant Image ${i}" style="width: 200px; height: 200px; object-fit: cover;">
-                            <p class="text-center">${captions[i] || ""}</p>
-                            <button class="btn btn-primary m-2" data-toggle="modal" data-target="#modal${i}" style="margin: auto; display: block;">
-                                Zoom in
-                            </button>
-                            <a href="static/elephants/${i}.png" download="elephant${i}.png" class="btn btn-success m-2" style="margin: auto; display: block;">
-                                Download
-                            </a>
-                            <div class="modal fade" id="modal${i}" tabindex="-1" role="dialog" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered modal-xl">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">${captions[i] || ("Image " + i)}</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <img class="img-fluid img-thumbnail" src="static/elephants/${i}.png" alt="Elephant Image ${i}" style="width: 80%;">
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        </div>
+            for(let i = 1; i <= 22; i++) {
+                document.write(`
+                    <div class="col-lg-3 col-md-4 col-6 mb-4 gallery-item">
+                        <img class="img-fluid img-thumbnail" src="static/elephants/${i}.png" alt="Elephant Image ${i}" style="width: 200px; height: 200px; object-fit: cover;">
+                        <p class="text-center">${captions[i] || ""}</p>
+                        <button class="btn btn-primary m-2" data-toggle="modal" data-target="#modal${i}" style="margin: auto; display: block;">
+                            Zoom in
+                        </button>
+                        <a href="static/elephants/${i}.png" download="elephant${i}.png" class="btn btn-success m-2" style="margin: auto; display: block;">
+                            Download
+                        </a>
+                        <div class="modal fade" id="modal${i}" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-xl">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">${captions[i] || ("Image " + i)}</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <img class="img-fluid img-thumbnail" src="static/elephants/${i}.png" alt="Elephant Image ${i}" style="width: 80%;">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    `);
-                }
-            </script>
+                    </div>
+                `);
+            }
+        </script>
 	</div>
     </div>
 
@@ -220,7 +220,6 @@
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
 
 </body>
 </html>

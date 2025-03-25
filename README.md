@@ -1,4 +1,4 @@
-# Elephantonian
+# [Elephantonian](https://elephantonian.replit.app)
 
 Welcome to **Elephantonian**, a vibrant project celebrating elephants, featuring a collection of elephant images, fun interactive games, and an engaging gallery. Explore and enjoy the majesty of elephants and some exciting games!
 
@@ -29,7 +29,7 @@ Pop balloons within 30 seconds to save the atmosphere!
 ### 3. **Drawer**
 Unleash your creativity in this interactive drawing canvas. Create colorful art directly in your browser.
 
-### 4. External Games
+### 4. **Other Games**
 - [Pacman](https://u9bux.csb.app) – A classic maze arcade game.
 - [Brick Breaker](https://mvv1b.csb.app) – Break bricks with a bouncing ball and paddle.
 
@@ -78,7 +78,7 @@ The project is organized as follows:
 ---
 
 ## 🌐 Live Preview
-Experience Elephantonian live at: [Elephantonian GitHub Pages](https://elephant200.github.io/elephantonian/)
+Experience Elephantonian live at: https://elephantonian.replit.app
 
 ---
 

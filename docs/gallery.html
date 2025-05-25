@@ -6,6 +6,7 @@
 	<title>Gallery</title>
 	<!--CSS for Bootstrap CDN: this will import all of the bootstrap styles-->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 	<link rel = "stylesheet" href = "custom.css">
 	<link rel = "icon" href = "static/logo.png">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -61,6 +62,28 @@
             padding: 8px 16px;
         }
 
+        .image-container {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .download-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .image-container:hover .download-btn {
+            opacity: 1;
+        }
+
         @media (max-width: 768px) {
             .gallery-grid {
                 grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -89,6 +112,8 @@
                 max-width: 100%;
             }
         }
+
+        
     </style>
 </head>
 <body>
@@ -109,68 +134,49 @@
             </div>
         </div>
         -->
-    <div class="gallery-grid">
-        <script>
-            // Captions for images
-            const captions = {
-                1: "Majestic African Elephant in the Savanna",
-                2: "Baby Elephant Playing with Water",
-                3: "Elephant Herd Migration at Sunset",
-                4: "Mother Elephant with Baby Calf",
-                5: "Bull Elephant Displaying Tusks",
-                6: "Elephants at the Watering Hole",
-                7: "Young Elephants Playing Together",
-                8: "Elephant Family Walking Through Plains",
-                9: "Close-up of Elephant's Eye",
-                10: "Elephant Spraying Water",
-                11: "Two Elephants Greeting Each Other",
-                12: "Baby Elephant Learning to Use Trunk",
-                13: "Elephant Herd Protecting Young",
-                14: "Elephant in Dense Forest",
-                15: "Elephants Crossing River",
-                16: "Elephant Dust Bath",
-                17: "Mother and Baby Walking Together",
-                18: "Elephant Among Trees",
-                19: "Elephant Reaching for Branches",
-                20: "Herd Moving Through Grassland",
-                21: "Elephant Portrait Side View",
-                22: "Family Bond - Mother and Calves"
-            };
-
-            for(let i = 1; i <= 22; i++) {
-                document.write(`
-                    <div class="col-lg-3 col-md-4 col-6 mb-4 gallery-item">
-                        <img class="img-fluid img-thumbnail" src="static/elephants/${i}.png" alt="Elephant Image ${i}" style="width: 200px; height: 200px; object-fit: cover;">
-                        <p class="text-center">${captions[i] || ""}</p>
-                        <button class="btn btn-primary m-2" data-toggle="modal" data-target="#modal${i}" style="margin: auto; display: block;">
-                            Zoom in
-                        </button>
-                        <a href="static/elephants/${i}.png" download="elephant${i}.png" class="btn btn-success m-2" style="margin: auto; display: block;">
-                            Download
-                        </a>
-                        <div class="modal fade" id="modal${i}" tabindex="-1" role="dialog" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-xl">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">${captions[i] || ("Image " + i)}</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <img class="img-fluid img-thumbnail" src="static/elephants/${i}.png" alt="Elephant Image ${i}" style="width: 80%;">
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        
+        <div class="row text-center text-lg-left">
+            <!-- Dynamically create gallery items -->
+                        <script>
+                for(let i = 1; i <= 22; i++) {
+                    document.write(`
+                        <div class="col-lg-3 col-md-4 col-6 mb-4">
+                            <div class="image-container">
+                                <img class="img-fluid img-thumbnail" src="static/elephants/${i}.png" 
+                                     style="width: 200px; height: 200px; object-fit: cover;"
+                                     data-toggle="modal" data-target="#modal${i}">
+                                <a href="static/elephants/${i}.png" download="elephant${i}.png" 
+                                   class="download-btn" onclick="event.stopPropagation();">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                            <div class="modal fade" id="modal${i}" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-xl">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Image ${i}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <img class="img-fluid img-thumbnail" src="static/elephants/${i}.png" style="width: 80%;">
+                                        </div>
+                                        <div class="modal-footer justify-content-between">
+                                            <a href="static/elephants/${i}.png" download="elephant${i}.png" 
+                                               class="btn btn-success">
+                                                <i class="fas fa-download"></i> Download
+                                            </a>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `);
-            }
-        </script>
-	</div>
+                    `);
+                }
+            </script>
+        </div>
     </div>
 
     <button id="backToTop">Back to Top</button>  <!-- Placeholder for Back to Top Button -->

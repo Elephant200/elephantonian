@@ -38,7 +38,7 @@
 
 		.game-image {
 			width: 100%;
-			height: 200px;
+			aspect-ratio: 2/3;
 			object-fit: cover;
 			border-radius: 8px;
 			margin-bottom: 1rem;
@@ -90,16 +90,27 @@
 				padding: 1rem;
 			}
 
-			.game-image {
-				height: 150px;
-			}
-
 			.game-title {
 				font-size: 1.3rem;
 			}
 
 			.game-description {
 				font-size: 0.9rem;
+			}
+		}
+
+		@media (max-width: 480px) {
+			.games-grid {
+				padding: 0.5rem;
+				gap: 1rem;
+			}
+
+			.game-title {
+				font-size: 1.2rem;
+			}
+
+			.game-description {
+				font-size: 0.85rem;
 			}
 		}
 	</style>
@@ -130,7 +141,7 @@
 				<img src="static/games/drawer.png" alt="Drawer" class="game-image" onclick="window.location.href='games/drawer.html'">
 				<div class="game-title">Drawer</div>
 				<div class="game-description">
-					Unleash your creativity with this interactive drawing canvas! Create colorful masterpieces, experiment with different brush sizes, and let your imagination run wild in this digital art studio.
+					Unleash your creativity with this interactive drawing canvas! Create colorful masterpieces, slide your cursor across the screen, and let your imagination run wild in this digital art studio.
 				</div>
 				<a href="games/drawer.html" class="play-btn">
 					<i class="fas fa-paint-brush"></i> Start Drawing
@@ -142,10 +153,10 @@
 				<img src="static/games/pingpong.png" alt="Ping Pong" class="game-image" onclick="window.location.href='games/pingpong.html'">
 				<div class="game-title">Ping Pong</div>
 				<div class="game-description">
-					Challenge a friend in this classic two-player ping pong game! Use keyboard controls to move your paddle and try to score against your opponent. First to score wins!
+					Challenge a friend in this classic two-player ping pong game! Use keyboard controls to move your paddle and try to score against your opponent. Have fun!
 				</div>
 				<a href="games/pingpong.html" class="play-btn">
-					<i class="fas fa-table-tennis"></i> Play Game
+					<i class="fas fa-table-tennis"></i> Play Now
 				</a>
 			</div>
 
@@ -157,19 +168,19 @@
 					Defend Earth from alien invasion in this classic arcade shooter! Control your spaceship, shoot down incoming invaders, and survive as long as possible. A timeless gaming experience!
 				</div>
 				<a href="games/spaceinvaders.html" class="play-btn">
-					<i class="fas fa-rocket"></i> Defend Earth
+					<i class="fas fa-rocket"></i> Play Now
 				</a>
 			</div>
 
 			<!-- Pacman -->
 			<div class="game-item">
-				<img src="static/games/pacman.png" alt="Pacman" class="game-image" onclick="window.location.href='games/pacman.html'">
+				<img src="static/games/pacman.png" alt="Pacman" class="game-image" onclick="window.open('https://u9bux.csb.app', '_blank')">
 				<div class="game-title">Pacman</div>
 				<div class="game-description">
-					Navigate through the maze, collect dots, and avoid the ghosts in this classic arcade game! Eat power pellets to turn the tables and chase down your pursuers. Waka-waka your way to victory!
+					Navigate through the maze, collect dots, and avoid the ghosts in this classic arcade game! Eat power pellets to turn the tables and chase down your pursuers. It gets harder as it goes, so stay on your toes!
 				</div>
-				<a href="games/pacman.html" class="play-btn">
-					<i class="fas fa-circle"></i> Start Game
+				<a href="https://u9bux.csb.app" target="_blank" class="play-btn">
+					<i class="fas fa-circle"></i> Play Now
 				</a>
 			</div>
 
@@ -181,7 +192,7 @@
 					Break all the bricks with your bouncing ball and paddle! Control the paddle to keep the ball in play while destroying colorful brick formations. A classic arcade experience!
 				</div>
 				<a href="https://mvv1b.csb.app" target="_blank" class="play-btn">
-					<i class="fas fa-external-link-alt"></i> Play External
+					<i class="fas fa-external-link-alt"></i> Play Now
 				</a>
 			</div>
 		</div>

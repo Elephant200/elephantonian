@@ -209,6 +209,29 @@ main p {
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+/* Hover dropdown styles */
+.hover-dropdown .hover-dropdown-menu {
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-10px);
+	transition: all 0.3s ease-in-out;
+	display: block !important;
+	pointer-events: none;
+}
+
+.hover-dropdown:hover .hover-dropdown-menu {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+	pointer-events: auto;
+}
+
+/* Ensure smooth animation on dropdown items */
+.hover-dropdown-menu .dropdown-item {
+	transition: background-color 0.2s ease;
+}
+
 /*
 .active {
 	color: blue !important;

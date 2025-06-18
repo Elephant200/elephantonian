@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Games</title>
+	<!--CSS for Bootstrap CDN: this will import all of the bootstrap styles-->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+	<link rel="stylesheet" href="custom.css">
+	<link rel="icon" href="static/logo.png">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<style>
+		.games-grid {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 2rem;
+			padding: 2rem;
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+
+		.game-item {
+			background: rgba(255, 255, 255, 0.1);
+			border-radius: 12px;
+			padding: 1.5rem;
+			text-align: center;
+			transition: transform 0.3s ease, box-shadow 0.3s ease;
+			border: 2px solid transparent;
+		}
+
+		.game-item:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+			border-color: orange;
+		}
+
+		.game-image {
+			width: 100%;
+			height: 200px;
+			object-fit: cover;
+			border-radius: 8px;
+			margin-bottom: 1rem;
+			cursor: pointer;
+			transition: transform 0.2s ease;
+		}
+
+		.game-image:hover {
+			transform: scale(1.05);
+		}
+
+		.game-title {
+			color: orange;
+			font-size: 1.5rem;
+			font-weight: bold;
+			margin-bottom: 0.5rem;
+		}
+
+		.game-description {
+			color: #fff;
+			font-size: 1rem;
+			line-height: 1.5;
+			margin-bottom: 1rem;
+		}
+
+		.play-btn {
+			background: linear-gradient(45deg, #ff6b35, #f7931e);
+			border: none;
+			color: white;
+			padding: 0.75rem 1.5rem;
+			border-radius: 25px;
+			font-weight: bold;
+			text-decoration: none;
+			display: inline-block;
+			transition: all 0.3s ease;
+		}
+
+		.play-btn:hover {
+			background: linear-gradient(45deg, #f7931e, #ff6b35);
+			color: white;
+			text-decoration: none;
+			transform: scale(1.05);
+		}
+
+		@media (max-width: 768px) {
+			.games-grid {
+				grid-template-columns: 1fr;
+				gap: 1.5rem;
+				padding: 1rem;
+			}
+
+			.game-image {
+				height: 150px;
+			}
+
+			.game-title {
+				font-size: 1.3rem;
+			}
+
+			.game-description {
+				font-size: 0.9rem;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div id="navbar"></div>
+
+	<div class="container-fluid">
+		<h1 class="text-center mt-4 mb-0 TITLE">Game Collection</h1>
+		<p class="text-center TEXT">Choose your adventure and dive into our exciting games!</p>
+		<hr class="mt-2 mb-5">
+
+		<div class="games-grid">
+			<!-- Balloon Pop -->
+			<div class="game-item">
+				<img src="static/games/balloonpop.png" alt="Balloon Pop" class="game-image" onclick="window.location.href='games/balloonpop.html'">
+				<div class="game-title">Balloon Pop</div>
+				<div class="game-description">
+					Pop as many balloons as you can within 30 seconds! Save the atmosphere by popping these colorful balloons before they float away. Test your reflexes and aim for the highest score!
+				</div>
+				<a href="games/balloonpop.html" class="play-btn">
+					<i class="fas fa-play"></i> Play Now
+				</a>
+			</div>
+
+			<!-- Drawer -->
+			<div class="game-item">
+				<img src="static/games/drawer.png" alt="Drawer" class="game-image" onclick="window.location.href='games/drawer.html'">
+				<div class="game-title">Drawer</div>
+				<div class="game-description">
+					Unleash your creativity with this interactive drawing canvas! Create colorful masterpieces, experiment with different brush sizes, and let your imagination run wild in this digital art studio.
+				</div>
+				<a href="games/drawer.html" class="play-btn">
+					<i class="fas fa-paint-brush"></i> Start Drawing
+				</a>
+			</div>
+
+			<!-- Ping Pong -->
+			<div class="game-item">
+				<img src="static/games/pingpong.png" alt="Ping Pong" class="game-image" onclick="window.location.href='games/pingpong.html'">
+				<div class="game-title">Ping Pong</div>
+				<div class="game-description">
+					Challenge a friend in this classic two-player ping pong game! Use keyboard controls to move your paddle and try to score against your opponent. First to score wins!
+				</div>
+				<a href="games/pingpong.html" class="play-btn">
+					<i class="fas fa-table-tennis"></i> Play Game
+				</a>
+			</div>
+
+			<!-- Space Invaders -->
+			<div class="game-item">
+				<img src="static/games/spaceinvaders.png" alt="Space Invaders" class="game-image" onclick="window.location.href='games/spaceinvaders.html'">
+				<div class="game-title">Space Invaders</div>
+				<div class="game-description">
+					Defend Earth from alien invasion in this classic arcade shooter! Control your spaceship, shoot down incoming invaders, and survive as long as possible. A timeless gaming experience!
+				</div>
+				<a href="games/spaceinvaders.html" class="play-btn">
+					<i class="fas fa-rocket"></i> Defend Earth
+				</a>
+			</div>
+
+			<!-- Pacman -->
+			<div class="game-item">
+				<img src="static/games/pacman.png" alt="Pacman" class="game-image" onclick="window.location.href='games/pacman.html'">
+				<div class="game-title">Pacman</div>
+				<div class="game-description">
+					Navigate through the maze, collect dots, and avoid the ghosts in this classic arcade game! Eat power pellets to turn the tables and chase down your pursuers. Waka-waka your way to victory!
+				</div>
+				<a href="games/pacman.html" class="play-btn">
+					<i class="fas fa-circle"></i> Start Game
+				</a>
+			</div>
+
+			<!-- Brick Breaker -->
+			<div class="game-item">
+				<img src="static/games/brickbreaker.png" alt="Brick Breaker" class="game-image" onclick="window.open('https://mvv1b.csb.app', '_blank')">
+				<div class="game-title">Brick Breaker</div>
+				<div class="game-description">
+					Break all the bricks with your bouncing ball and paddle! Control the paddle to keep the ball in play while destroying colorful brick formations. A classic arcade experience!
+				</div>
+				<a href="https://mvv1b.csb.app" target="_blank" class="play-btn">
+					<i class="fas fa-external-link-alt"></i> Play External
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$(document).ready(function($) {
+			$.get("navbar.html", function(data) {
+				$("#navbar").replaceWith(data);
+			});
+		});
+	</script>
+
+	<!--Bootstrap javascript-->
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>

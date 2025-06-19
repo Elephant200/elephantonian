@@ -227,15 +227,17 @@
       e.preventDefault();
       if (touchY !== null && activePaddle) {
         const touch = e.touches[0];
-        const deltaY = touch.clientY - touchY;
-        touchY = touch.clientY;
+        const rect = pingpong.getBoundingClientRect();
+        const relativeY = touch.clientY - rect.top;
+        const paddleHeight = activePaddle.clientHeight;
         
-        const currentTop = activePaddle.offsetTop;
+        // Center paddle on touch position
         const newTop = Math.max(0, Math.min(
-          pingpong.clientHeight - activePaddle.clientHeight,
-          currentTop + deltaY
+          pingpong.clientHeight - paddleHeight,
+          relativeY - paddleHeight / 2
         ));
         activePaddle.style.top = newTop + 'px';
+        touchY = touch.clientY;
       }
     });
 
@@ -245,15 +247,15 @@
     });
 
     function movePaddle(paddle, direction) {
-      const currentTop = parseInt(paddle.style.top) || paddle.offsetTop;
+      const currentTop = paddle.offsetTop;
       const containerHeight = pingpong.clientHeight;
       const paddleHeight = paddle.clientHeight;
 
       let newTop;
-      if (direction === 'up' && currentTop > 0) {
-        newTop = currentTop - paddleSpeed;
-      } else if (direction === 'down' && currentTop + paddleHeight < containerHeight) {
-        newTop = currentTop + paddleSpeed;
+      if (direction === 'up') {
+        newTop = Math.max(0, currentTop - paddleSpeed);
+      } else if (direction === 'down') {
+        newTop = Math.min(containerHeight - paddleHeight, currentTop + paddleSpeed);
       } else {
         return;
       }
@@ -262,27 +264,33 @@
     }
 
     function moveBall() {
-      const currentLeft = ball.offsetLeft;
-      const currentTop = ball.offsetTop;
-
       const containerWidth = pingpong.clientWidth;
       const containerHeight = pingpong.clientHeight;
-
       const ballWidth = ball.clientWidth;
       const ballHeight = ball.clientHeight;
 
-      ball.style.left = (currentLeft + ballSpeedX) + 'px';
-      ball.style.top = (currentTop + ballSpeedY) + 'px';
+      // Calculate new position
+      const newLeft = ball.offsetLeft + ballSpeedX;
+      const newTop = ball.offsetTop + ballSpeedY;
 
-      if (ball.offsetTop <= 0 || (ball.offsetTop + ballHeight) >= containerHeight) {
+      // Apply new position
+      ball.style.left = newLeft + 'px';
+      ball.style.top = newTop + 'px';
+
+      // Wall collision (top and bottom)
+      if (newTop <= 0 || (newTop + ballHeight) >= containerHeight) {
         ballSpeedY *= -1;
+        // Clamp ball position to stay within bounds
+        ball.style.top = Math.max(0, Math.min(containerHeight - ballHeight, newTop)) + 'px';
       }
 
+      // Get updated ball position after movement
       const ballLeft = ball.offsetLeft;
       const ballRight = ballLeft + ballWidth;
       const ballTop = ball.offsetTop;
       const ballBottom = ballTop + ballHeight;
 
+      // Get paddle positions
       const leftLeft = leftPaddle.offsetLeft;
       const leftRight = leftLeft + leftPaddle.clientWidth;
       const leftTop = leftPaddle.offsetTop;
@@ -293,30 +301,37 @@
       const rightTop = rightPaddle.offsetTop;
       const rightBottom = rightTop + rightPaddle.clientHeight;
 
-      if (
-        ballLeft <= leftRight &&
-        ballRight >= leftLeft &&
-        ballBottom >= leftTop &&
-        ballTop <= leftBottom
+      // Left paddle collision - only if ball is moving left
+      if (ballSpeedX < 0 &&
+          ballLeft <= leftRight &&
+          ballRight >= leftLeft &&
+          ballBottom >= leftTop &&
+          ballTop <= leftBottom
       ) {
         ballSpeedX = Math.abs(ballSpeedX);
+        // Push ball away from paddle to prevent sticking
+        ball.style.left = (leftRight + 1) + 'px';
       }
 
-      if (
-        ballRight >= rightLeft &&
-        ballLeft <= rightRight &&
-        ballBottom >= rightTop &&
-        ballTop <= rightBottom
+      // Right paddle collision - only if ball is moving right
+      if (ballSpeedX > 0 &&
+          ballRight >= rightLeft &&
+          ballLeft <= rightRight &&
+          ballBottom >= rightTop &&
+          ballTop <= rightBottom
       ) {
         ballSpeedX = -Math.abs(ballSpeedX);
+        // Push ball away from paddle to prevent sticking
+        ball.style.left = (rightLeft - ballWidth - 1) + 'px';
       }
 
-      if (ballLeft <= 0) {
+      // Scoring - check if ball has completely left the playing area
+      if (ballRight < 0) {
         rightScore++;
         scoreRight.textContent = rightScore;
         resetBall();
       }
-      if (ballRight >= containerWidth) {
+      if (ballLeft > containerWidth) {
         leftScore++;
         scoreLeft.textContent = leftScore;
         resetBall();

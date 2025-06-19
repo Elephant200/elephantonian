@@ -33,7 +33,7 @@
 		.game-item:hover {
 			transform: translateY(-5px);
 			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-			border-color: orange;
+			border-color: green;
 		}
 
 		.game-image {
@@ -51,7 +51,7 @@
 		}
 
 		.game-title {
-			color: orange;
+			color: green;
 			font-size: 1.5rem;
 			font-weight: bold;
 			margin-bottom: 0.5rem;
@@ -65,7 +65,7 @@
 		}
 
 		.play-btn {
-			background: linear-gradient(45deg, #ff6b35, #f7931e);
+			background: linear-gradient(45deg, #228B22, #32CD32);
 			border: none;
 			color: white;
 			padding: 0.75rem 1.5rem;
@@ -77,7 +77,7 @@
 		}
 
 		.play-btn:hover {
-			background: linear-gradient(45deg, #f7931e, #ff6b35);
+			background: linear-gradient(45deg, #32CD32, #228B22);
 			color: white;
 			text-decoration: none;
 			transform: scale(1.05);
@@ -124,39 +124,15 @@
 		<hr class="mt-2 mb-5">
 
 		<div class="games-grid">
-			<!-- Balloon Pop -->
+			<!-- Pacman -->
 			<div class="game-item">
-				<img src="static/games/balloonpop.png" alt="Balloon Pop" class="game-image" onclick="window.location.href='games/balloonpop.html'">
-				<div class="game-title">Balloon Pop</div>
+				<img src="static/games/pacman.png" alt="Pacman" class="game-image" onclick="window.open('https://u9bux.csb.app', '_blank')">
+				<div class="game-title">Pacman</div>
 				<div class="game-description">
-					Pop as many balloons as you can within 30 seconds! Save the atmosphere by popping these colorful balloons before they float away. Test your reflexes and aim for the highest score!
+					Navigate through the maze, collect dots, and avoid the ghosts in this classic arcade game! Eat power pellets to turn the tables and chase down your pursuers. It gets harder as it goes, so stay on your toes!
 				</div>
-				<a href="games/balloonpop.html" class="play-btn">
-					<i class="fas fa-play"></i> Play Now
-				</a>
-			</div>
-
-			<!-- Drawer -->
-			<div class="game-item">
-				<img src="static/games/drawer.png" alt="Drawer" class="game-image" onclick="window.location.href='games/drawer.html'">
-				<div class="game-title">Drawer</div>
-				<div class="game-description">
-					Unleash your creativity with this interactive drawing canvas! Create colorful masterpieces, slide your cursor across the screen, and let your imagination run wild in this digital art studio.
-				</div>
-				<a href="games/drawer.html" class="play-btn">
-					<i class="fas fa-paint-brush"></i> Start Drawing
-				</a>
-			</div>
-
-			<!-- Ping Pong -->
-			<div class="game-item">
-				<img src="static/games/pingpong.png" alt="Ping Pong" class="game-image" onclick="window.location.href='games/pingpong.html'">
-				<div class="game-title">Ping Pong</div>
-				<div class="game-description">
-					Challenge a friend in this classic two-player ping pong game! Use keyboard controls to move your paddle and try to score against your opponent. Have fun!
-				</div>
-				<a href="games/pingpong.html" class="play-btn">
-					<i class="fas fa-table-tennis"></i> Play Now
+				<a href="https://u9bux.csb.app" target="_blank" class="play-btn">
+					<i class="fas fa-circle"></i> Play Now
 				</a>
 			</div>
 
@@ -172,15 +148,27 @@
 				</a>
 			</div>
 
-			<!-- Pacman -->
+			<!-- Balloon Pop -->
 			<div class="game-item">
-				<img src="static/games/pacman.png" alt="Pacman" class="game-image" onclick="window.open('https://u9bux.csb.app', '_blank')">
-				<div class="game-title">Pacman</div>
+				<img src="static/games/balloonpop.png" alt="Balloon Pop" class="game-image" onclick="window.location.href='games/balloonpop.html'">
+				<div class="game-title">Balloon Pop</div>
 				<div class="game-description">
-					Navigate through the maze, collect dots, and avoid the ghosts in this classic arcade game! Eat power pellets to turn the tables and chase down your pursuers. It gets harder as it goes, so stay on your toes!
+					Pop as many balloons as you can within 30 seconds! Save the atmosphere by popping these colorful balloons before they float away. Test your reflexes and aim for the highest score!
 				</div>
-				<a href="https://u9bux.csb.app" target="_blank" class="play-btn">
-					<i class="fas fa-circle"></i> Play Now
+				<a href="games/balloonpop.html" class="play-btn">
+					<i class="fas fa-play"></i> Play Now
+				</a>
+			</div>
+
+			<!-- Ping Pong -->
+			<div class="game-item">
+				<img src="static/games/pingpong.png" alt="Ping Pong" class="game-image" onclick="window.location.href='games/pingpong.html'">
+				<div class="game-title">Ping Pong</div>
+				<div class="game-description">
+					Challenge a friend in this classic two-player ping pong game! Use keyboard controls to move your paddle and try to score against your opponent. Have fun!
+				</div>
+				<a href="games/pingpong.html" class="play-btn">
+					<i class="fas fa-table-tennis"></i> Play Now
 				</a>
 			</div>
 
@@ -193,6 +181,18 @@
 				</div>
 				<a href="https://mvv1b.csb.app" target="_blank" class="play-btn">
 					<i class="fas fa-external-link-alt"></i> Play Now
+				</a>
+			</div>
+
+			<!-- Drawer -->
+			<div class="game-item">
+				<img src="static/games/drawer.png" alt="Drawer" class="game-image" onclick="window.location.href='games/drawer.html'">
+				<div class="game-title">Drawer</div>
+				<div class="game-description">
+					Unleash your creativity with this interactive drawing canvas! Create colorful masterpieces, slide your cursor across the screen, and let your imagination run wild in this digital art studio.
+				</div>
+				<a href="games/drawer.html" class="play-btn">
+					<i class="fas fa-paint-brush"></i> Start Drawing
 				</a>
 			</div>
 		</div>

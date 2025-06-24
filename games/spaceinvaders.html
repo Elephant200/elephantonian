@@ -46,10 +46,18 @@
 			const canvas = document.getElementById("canvas");
 			const ctx = canvas.getContext("2d");
 
-			const alienImg = new Image();
-			alienImg.src = "https://i.ibb.co/8LT2JyXp/Screenshot-2025-04-26-at-3-55-17-PM.png";
+			const alienImg1 = new Image();
+			const alienImg2 = new Image();
+			const alienImg3 = new Image();
+			const alienImg4 = new Image();
+			alienImg1.src = "https://i.ibb.co/HTVFDXz3/Screenshot-2025-06-24-at-10-44-26-AM.png"; // type 1
+			alienImg2.src = "https://i.ibb.co/ccH8hjPc/Screenshot-2025-06-24-at-10-44-34-AM.png";
+			alienImg3.src = "https://i.ibb.co/tjDqmdj/Screenshot-2025-06-24-at-10-44-49-AM.png";
+			alienImg4.src = "https://i.ibb.co/XZNsnX84/Screenshot-2025-06-24-at-10-52-17-AM.png";
 
 			const fireRate = 500; // the lower it is, the faster the firerate
+			let alienFireRate = 50000;
+			let alienSpeed = 1;
 
 			let aliens = [];
 			let bullets = [];
@@ -61,6 +69,10 @@
 				deathTime: 0
 			};
 
+			let specialAlien = false;
+			let lastSpecialAlienSpawn = Date.now();
+			let specialAlienCooldown = 0;
+
 			let leftMoving = false;
 			let rightMoving = false;
 			let fireTime = 0;
@@ -69,27 +81,15 @@
 			let lastAlienFireTime = 0;
 			let gameState = "start"; // 'start' | 'playing' | 'paused' | 'over'
 			let score = 0;
-			let lives = 3;
+			let lives = 100;
 
 			function initialize() {
 				aliens = [];
 				bullets = [];
 				enemyBullets = [];
 				fireTime = 0;
-				lastAlienFireTime = Date.now();
 
-				for (let i = 0; i < 9; i++) {
-					for (let j = 0; j < 5; j++) {
-						aliens.push({
-							x: 75 + i * 100,
-							y: 100 + j * 50,
-							speedX: 1,
-							width: 50,
-							height: 30,
-							dead: false
-						});
-					}
-				}
+				initAliens();
 			}
 			initialize();
 
@@ -108,6 +108,7 @@
 						bullet.dead = true;
 						ship.deathTime = Date.now();
 						lives--;
+						score -= 150;
 						ship.x = 450;
 						ship.y = 550;
 						if (lives <= 0) gameState = "over";
@@ -120,60 +121,111 @@
 
 			function maybeAlienFire() {
 				const now = Date.now();
-				if (
-					now - lastAlienFireTime > 1000 + Math.random() * 500 &&
-					aliens.length > 0
-				) {
-					lastAlienFireTime = now;
-					const alienShooter = aliens[Math.floor(Math.random() * aliens.length)];
-					enemyBullets.push({
-						x: alienShooter.x + alienShooter.width / 2 - 2,
-						y: alienShooter.y + alienShooter.height,
-						width: 4,
-						height: 10,
-						dead: false
-					});
+				aliens.forEach((alienShooter) => {
+					if (now - alienShooter.lastFireTime > alienShooter.cooldown) {
+						alienShooter.lastFireTime = now;
+						alienShooter.cooldown = Math.random() * alienFireRate;
+						enemyBullets.push({
+							x: alienShooter.x + alienShooter.width / 2 - 2,
+							y: alienShooter.y + alienShooter.height,
+							width: 4,
+							height: 10,
+							dead: false
+						});
+					}
+				});
+			}
+
+			function initAliens() {
+				for (let i = 0; i < 9; i++) {
+					for (let j = 0; j < 1; j++) {
+						aliens.push({
+							x: 84 + i * 100,
+							y: 100 + j * 50,
+							speedX: alienSpeed,
+							width: 36,
+							height: 36,
+							dead: false,
+							type: 3,
+							lastFireTime: Date.now(),
+							cooldown: Math.random() * alienFireRate
+						});
+					}
+					for (let j = 1; j < 3; j++) {
+						aliens.push({
+							x: 75 + i * 100,
+							y: 100 + j * 50,
+							speedX: alienSpeed,
+							width: 54,
+							height: 36,
+							dead: false,
+							type: 2,
+							lastFireTime: Date.now(),
+							cooldown: Math.random() * alienFireRate
+						});
+					}
+					for (let j = 3; j < 5; j++) {
+						aliens.push({
+							x: 75 + i * 100,
+							y: 100 + j * 50,
+							speedX: alienSpeed,
+							width: 54,
+							height: 36,
+							dead: false,
+							type: 1,
+							lastFireTime: Date.now(),
+							cooldown: Math.random() * alienFireRate
+						});
+					}
 				}
 			}
 
 			function updateAliens() {
-				if (aliens.length === 0) {
-					score += 100;
-					for (let i = 0; i < 9; i++) {
-						for (let j = 0; j < 5; j++) {
-							aliens.push({
-								x: 75 + i * 100,
-								y: 100 + j * 50,
-								speedX: 1.2,
-								width: 50,
-								height: 30,
-								dead: false
-							});
-						}
-					}
+				// Filter out special aliens for formation count
+				let regularAliens = aliens.filter(alien => !alien.isSpecial);
+				
+				if (regularAliens.length === 0) {
+					score += 750;
+					alienFireRate = alienFireRate >= 20000 ? 0.9 * alienFireRate : 0.975 * alienFireRate;
+					alienSpeed = alienSpeed < 1.5 ? 1.05 * alienSpeed : 1.01 * alienSpeed;
+					console.log(alienFireRate);
+					initAliens();
 				}
 
 				let reverse = false;
+				
+				// Update all aliens
 				aliens.forEach((alien) => {
 					alien.x += alien.speedX;
-					if (alien.x + alien.width >= canvas.width || alien.x <= 0) {
-						reverse = true;
-					}
-					if (alien.y + alien.height >= ship.y) {
-						lives--;
-						if (lives > 0) {
-							resetLevel();
-						} else {
-							gameState = "over";
+					
+					// Only check regular aliens for formation reversal
+					if (!alien.isSpecial) {
+						if (alien.x + alien.width >= canvas.width || alien.x <= 0) {
+							reverse = true;
 						}
 					}
+					
+					if (alien.y + alien.height >= ship.y) {
+						gameState = "over";
+					}
 				});
+				
+				// Only reverse regular aliens in formation
 				if (reverse) {
 					aliens.forEach((alien) => {
-						alien.speedX = -alien.speedX;
-						alien.y += 7.5;
+						if (!alien.isSpecial) {
+							alien.speedX = -alien.speedX;
+							alien.y += 10;
+						}
 					});
 				}
+			}
+
+			function resetAlienLastFireTime() {
+				aliens = aliens.map((alien) => {
+					alien.lastFireTime = Date.now() - alien.cooldown / 2;
+					return alien;
+				});
 			}
 
 			function updateShip() {
@@ -193,9 +245,30 @@
 						if (isColliding(bullet, alien)) {
 							bullet.dead = true;
 							alien.dead = true;
-							score += 10;
+							if (alien.type === 1) {
+								score += 10;
+							} else if (alien.type === 2) {
+								score += 20;
+							} else if (alien.type === 3) {
+								score += 40;
+							} else if (alien.type === 4) {
+								score += 150;
+							}
+							
+							// Reset special alien flag when special alien is destroyed
+							if (alien.isSpecial) {
+								specialAlien = false;
+							}
 						}
 					});
+				});
+
+				// Remove special alien if it goes off screen
+				aliens.forEach((alien) => {
+					if (alien.isSpecial && alien.x > canvas.width + 120) {
+						alien.dead = true;
+						specialAlien = false;
+					}
 				});
 
 				aliens = aliens.filter((alien) => !alien.dead);
@@ -220,12 +293,35 @@
 				return true;
 			}
 
+			function updateSpecialAlien() {
+				if (!specialAlien) {
+					// For testing - spawn special alien immediately at round start
+					specialAlien = true;
+					lastSpecialAlienSpawn = Date.now();
+					specialAlienCooldown = Math.floor(Math.random() * 15000) + 10000; // 10-25 seconds
+					
+					aliens.push({
+						x: -120,
+						y: 50,
+						speedX: alienSpeed * 1.5,
+						width: 108,
+						height: 31.5,
+						dead: false,
+						type: 4,
+						lastFireTime: Date.now(),
+						cooldown: Number.MAX_SAFE_INTEGER,
+						isSpecial: true
+					});
+				}
+			}
+
 			function drawInfo() {
 				ctx.fillStyle = "white";
 				ctx.font = "20px Arial";
-				ctx.textAlign = "center";
-				ctx.fillText(`Score: ${score}`, 50, 30);
-				ctx.fillText(`Lives: ${lives}`, canvas.width - 80, 30);
+				ctx.textAlign = "left";
+				ctx.fillText(`Score: ${score}`, 15, 30);
+				ctx.textAlign = "right";
+				ctx.fillText(`Lives: ${lives}`, canvas.width - 15, 30);
 			}
 
 			function drawStartScreen() {
@@ -241,6 +337,7 @@
 				ctx.fillStyle = "rgba(0,0,0,0.5)";
 				ctx.fillRect(0, 0, canvas.width, canvas.height);
 				ctx.fillStyle = "white";
+				ctx.textAlign = "center";
 				ctx.font = "36px Arial";
 				ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
 				ctx.font = "18px Arial";
@@ -261,7 +358,22 @@
 
 				// aliens
 				ctx.fillStyle = "white";
-				aliens.forEach((a) => ctx.drawImage(alienImg, a.x, a.y, a.width, a.height));
+				aliens.forEach((a) => {
+					switch (a.type) {
+						case 1:
+							ctx.drawImage(alienImg1, a.x, a.y, a.width, a.height);
+							break;
+						case 2:
+							ctx.drawImage(alienImg2, a.x, a.y, a.width, a.height);
+							break;
+						case 3:
+							ctx.drawImage(alienImg3, a.x, a.y, a.width, a.height);
+							break;
+						case 4:
+							ctx.drawImage(alienImg4, a.x, a.y, a.width, a.height);
+							break;
+					}
+				});
 
 				// player bullets
 				ctx.fillStyle = "rgb(121, 251, 83)";
@@ -345,6 +457,7 @@
 					drawReload();
 					drawLives();
 					drawPauseScreen();
+					resetAlienLastFireTime(); // to prevent all of them from shooting when unpaused
 					requestAnimationFrame(animate);
 					return;
 				}
@@ -356,6 +469,7 @@
 				maybeAlienFire();
 				updateAlienBullets();
 				updateShip();
+				updateSpecialAlien();
 
 				drawEntities();
 				drawInfo();

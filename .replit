@@ -3,4 +3,15 @@ channel = "stable-24_05"
 
 [deployment]
 deploymentTarget = "static"
-publicDir = "docs"
+publicDir = "."
+
+[workflows]
+
+[[workflows.workflow]]
+name = "Run"
+mode = "sequential"
+author = 3947996
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = ""

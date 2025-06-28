@@ -31,7 +31,7 @@
 				border: 2px solid white;
 				max-width: 100%;
 				height: auto;
-				transform: scale(0.9);
+				transform: scale(0.85);
 				transform-origin: center;
 			}
 		</style>
@@ -42,6 +42,7 @@
 		<div class="game-container">
 			<canvas id="canvas" width="1000" height="625"></canvas>
 		</div>
+		
 		<script>
 			const canvas = document.getElementById("canvas");
 			const ctx = canvas.getContext("2d");
@@ -71,23 +72,57 @@
 
 			let specialAlien = false;
 			let lastSpecialAlienSpawn = Date.now();
-			let specialAlienCooldown = 0;
+			let specialAlienCooldown = Math.floor(Math.random() * 10000) + 10000;
 
 			let leftMoving = false;
 			let rightMoving = false;
 			let fireTime = 0;
 
 			let enemyBullets = [];
-			let lastAlienFireTime = 0;
 			let gameState = "start"; // 'start' | 'playing' | 'paused' | 'over'
+			let lives = 3;
+
 			let score = 0;
-			let lives = 100;
+			let wave = 1;
+			let specialAliensShot = 0;
+			let totalAliensShot = 0;
+			let totalBulletsShot = 0;
+
+			let highScores = null;
+			let maxWave = null;
+			let maxSpecialAliensShot = null;
+			let maxAccuracy = null;
+			let dataLoaded = false;
+
+			let lastUpdatedRecords = Date.now();
 
 			function initialize() {
 				aliens = [];
 				bullets = [];
-				enemyBullets = [];
+
+				alienFireRate = 50000;
+				alienSpeed = 1;
+
+				specialAlien = false;
+				lastSpecialAlienSpawn = Date.now();
+				specialAlienCooldown = Math.floor(Math.random() * 20000) + 20000;
+
+				ship.x = 450;
+				ship.y = 550;
+				leftMoving = false;
+				rightMoving = false;
 				fireTime = 0;
+
+				enemyBullets = [];
+				lives = 3;
+
+				score = 0;
+				wave = 1;
+				specialAliensShot = 0;
+				totalAliensShot = 0;
+				totalBulletsShot = 0;
+
+				specialAlien = false;
 
 				initAliens();
 			}
@@ -111,7 +146,10 @@
 						score -= 150;
 						ship.x = 450;
 						ship.y = 550;
-						if (lives <= 0) gameState = "over";
+						if (lives <= 0) {
+							gameState = "over";
+							updateRecords();
+						}
 					}
 				});
 				enemyBullets = enemyBullets.filter(
@@ -181,10 +219,8 @@
 			}
 
 			function updateAliens() {
-				// Filter out special aliens for formation count
-				let regularAliens = aliens.filter(alien => !alien.isSpecial);
-				
-				if (regularAliens.length === 0) {
+				if (aliens.length === 0 || aliens.length === 1 && specialAlien) {
+					wave++;
 					score += 750;
 					alienFireRate = alienFireRate >= 20000 ? 0.9 * alienFireRate : 0.975 * alienFireRate;
 					alienSpeed = alienSpeed < 1.5 ? 1.05 * alienSpeed : 1.01 * alienSpeed;
@@ -193,27 +229,24 @@
 				}
 
 				let reverse = false;
-				
-				// Update all aliens
 				aliens.forEach((alien) => {
 					alien.x += alien.speedX;
-					
-					// Only check regular aliens for formation reversal
-					if (!alien.isSpecial) {
-						if (alien.x + alien.width >= canvas.width || alien.x <= 0) {
-							reverse = true;
-						}
+					if (alien.type !== 4 && (alien.x + alien.width >= canvas.width || alien.x <= 0)) {
+						reverse = true;
+						console.log(alien.type);
 					}
-					
-					if (alien.y + alien.height >= ship.y) {
+					if (alien.type === 4 && alien.x >= canvas.width) {
+						alien.dead = true;
+						specialAlien = false;
+					}
+					if (alien.y + alien.height >= ship.y - 15) {
 						gameState = "over";
+						updateRecords();
 					}
 				});
-				
-				// Only reverse regular aliens in formation
 				if (reverse) {
 					aliens.forEach((alien) => {
-						if (!alien.isSpecial) {
+						if (alien.type !== 4) {
 							alien.speedX = -alien.speedX;
 							alien.y += 10;
 						}
@@ -245,6 +278,7 @@
 						if (isColliding(bullet, alien)) {
 							bullet.dead = true;
 							alien.dead = true;
+							totalAliensShot++;
 							if (alien.type === 1) {
 								score += 10;
 							} else if (alien.type === 2) {
@@ -253,22 +287,11 @@
 								score += 40;
 							} else if (alien.type === 4) {
 								score += 150;
-							}
-							
-							// Reset special alien flag when special alien is destroyed
-							if (alien.isSpecial) {
 								specialAlien = false;
+								specialAliensShot++;
 							}
 						}
 					});
-				});
-
-				// Remove special alien if it goes off screen
-				aliens.forEach((alien) => {
-					if (alien.isSpecial && alien.x > canvas.width + 120) {
-						alien.dead = true;
-						specialAlien = false;
-					}
 				});
 
 				aliens = aliens.filter((alien) => !alien.dead);
@@ -293,26 +316,120 @@
 				return true;
 			}
 
-			function updateSpecialAlien() {
-				if (!specialAlien) {
-					// For testing - spawn special alien immediately at round start
-					specialAlien = true;
-					lastSpecialAlienSpawn = Date.now();
-					specialAlienCooldown = Math.floor(Math.random() * 15000) + 10000; // 10-25 seconds
-					
-					aliens.push({
-						x: -120,
-						y: 50,
-						speedX: alienSpeed * 1.5,
-						width: 108,
-						height: 31.5,
-						dead: false,
-						type: 4,
-						lastFireTime: Date.now(),
-						cooldown: Number.MAX_SAFE_INTEGER,
-						isSpecial: true
-					});
+			function spawnSpecialAlien() {
+				if (!specialAlien) { // one currently exists
+					if (lastSpecialAlienSpawn + specialAlienCooldown <= Date.now()) {
+						aliens.push({
+							x: -120,
+							y: 50,
+							speedX: alienSpeed * 1.75,
+							width: 72,
+							height: 23.625,
+							dead: false,
+							type: 4,
+							lastFireTime: Date.now(),
+							cooldown: Number.MAX_SAFE_INTEGER
+						});
+						specialAlien = true;
+						lastSpecialAlienSpawn = Date.now();
+						specialAlienCooldown = Math.floor(Math.random() * 20000) + 20000; // update cooldown for next time
+					}
 				}
+			}
+
+			function updateRecords() {
+				console.log("Update records");
+				if (score > highScores[0]) {
+					highScores[2] = highScores[1];
+					highScores[1] = highScores[0];
+					highScores[0] = score;
+				} else if (score > highScores[1]) {
+					highScores[2] = highScores[1];
+					highScores[1] = score;
+				} else if (score > highScores[2]) {
+					highScores[2] = score;
+				}
+				if (wave > maxWave) {
+					maxWave = wave;
+				}
+				if (specialAliensShot > maxSpecialAliensShot) {
+					maxSpecialAliensShot = specialAliensShot;
+				}
+				let accuracy = Math.floor(totalAliensShot / totalBulletsShot * 100)
+				if (score >= 3200 && accuracy > maxAccuracy) {
+					maxAccuracy = accuracy;
+				}
+				database = {
+					"high_scores": highScores,
+					"max_wave": maxWave,
+					"max_special_aliens_shot": maxSpecialAliensShot,
+					"max_accuracy": maxAccuracy
+				};
+				updateData(database);
+				console.log("Updated records.")
+			}
+
+			function drawGameInformation() {
+				ctx.font = "24px Monospace";
+				ctx.textAlign = "center";
+
+				// Draw leaderboard section box
+				ctx.lineWidth = 2;
+				ctx.strokeStyle = "white";
+				ctx.strokeRect(550, 275, 375, 275);
+
+				// Draw underlined "LEADERBOARD"
+				ctx.fillText("LEADERBOARD", 737.5, 310);
+				ctx.lineWidth = 3;
+				ctx.beginPath();
+				ctx.moveTo(655, 315);
+				ctx.lineTo(820, 315);
+				ctx.stroke();
+				ctx.closePath();
+
+				// Draw record labels
+				ctx.textAlign = "left";
+				const spacing = 36;
+				ctx.fillText("#1 Score: ", 570, 350);
+				ctx.fillText("#2 Score: ", 570, 350 + spacing * 1);
+				ctx.fillText("#3 Score: ", 570, 350 + spacing * 2);
+				ctx.fillText("Highest Wave: ", 570, 350 + spacing * 3);
+				ctx.fillText("Most UFOs shot: ", 570, 350 + spacing * 4);
+				ctx.fillText("Highest Accuracy: ", 570, 350 + spacing * 5);
+
+				ctx.textAlign = "right";
+				if (dataLoaded) {
+					ctx.fillText(highScores[0], 905, 350);
+					ctx.fillText(highScores[1], 905, 350 + spacing * 1);
+					ctx.fillText(highScores[2], 905, 350 + spacing * 2);
+					ctx.fillText(maxWave, 905, 350 + spacing * 3);
+					ctx.fillText(maxSpecialAliensShot, 905, 350 + spacing * 4);
+					ctx.fillText(`${maxAccuracy}%`, 905, 350 + spacing * 5);
+				} else {
+					ctx.fillText("...", 905, 350);
+					ctx.fillText("...", 905, 350 + spacing * 1);
+					ctx.fillText("...", 905, 350 + spacing * 2);
+					ctx.fillText("...", 905, 350 + spacing * 3);
+					ctx.fillText("...", 905, 350 + spacing * 4);
+					ctx.fillText("...", 905, 350 + spacing * 5);
+				}
+
+				// Draw alien score section box
+				ctx.lineWidth = 2;
+				ctx.strokeStyle = "white";
+				ctx.strokeRect(75, 275, 375, 275);
+
+				ctx.drawImage(alienImg1, 110, 300, 54, 36);
+				ctx.drawImage(alienImg2, 110, 365, 54, 36);
+				ctx.drawImage(alienImg3, 119, 430, 36, 36);
+				ctx.drawImage(alienImg4, 101, 495, 72, 23.625);
+
+				ctx.font = "36px Monospace";
+				ctx.textAlign = "left";
+				ctx.fillText("= 10 PTS", 220, 325);
+				ctx.fillText("= 20 PTS", 220, 390);
+				ctx.fillText("= 40 PTS", 220, 455);
+				ctx.fillText("= 150 PTS", 220, 520);
 			}
 
 			function drawInfo() {
@@ -322,15 +439,20 @@
 				ctx.fillText(`Score: ${score}`, 15, 30);
 				ctx.textAlign = "right";
 				ctx.fillText(`Lives: ${lives}`, canvas.width - 15, 30);
+				ctx.font = "25px Arial";
+				ctx.textAlign = "center";
+				ctx.fillText(`Wave ${wave}`, canvas.width / 2, 32.5);
 			}
 
 			function drawStartScreen() {
 				ctx.fillStyle = "white";
-				ctx.font = "48px Arial";
+				ctx.font = "48px Monospace";
 				ctx.textAlign = "center";
-				ctx.fillText("SPACE INVADERS", canvas.width / 2, 250);
-				ctx.font = "24px Arial";
-				ctx.fillText("PRESS ENTER TO START", canvas.width / 2, 300);
+				ctx.fillText("SPACE INVADERS", canvas.width / 2, 100);
+				ctx.font = "24px Monospace";
+				ctx.fillText("PRESS ENTER TO START", canvas.width / 2, 150);
+
+				drawGameInformation();
 			}
 
 			function drawPauseScreen() {
@@ -338,20 +460,26 @@
 				ctx.fillRect(0, 0, canvas.width, canvas.height);
 				ctx.fillStyle = "white";
 				ctx.textAlign = "center";
-				ctx.font = "36px Arial";
-				ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
-				ctx.font = "18px Arial";
-				ctx.fillText("Press P to Resume", canvas.width / 2, canvas.height / 2 + 40);
+				ctx.font = "50px Monospace";
+				ctx.fillText("PAUSED", canvas.width / 2, 275);
+				ctx.font = "20Px Monospace";
+				ctx.fillText("PRESS ESC OR P TO RESUME", canvas.width / 2, 350);
 			}
 
 			function drawGameOver() {
 				ctx.fillStyle = "white";
-				ctx.font = "48px Arial";
+				ctx.font = "48px Monospace";
 				ctx.textAlign = "center";
-				ctx.fillText("GAME OVER", canvas.width / 2, 250);
-				ctx.font = "24px Arial";
-				ctx.fillText(`Final Score: ${score}`, canvas.width / 2, 300);
-				ctx.fillText("PRESS ENTER TO RESTART", canvas.width / 2, 350);
+				ctx.fillText("GAME OVER", canvas.width / 2, 100);
+				ctx.font = "24px Monospace";
+				ctx.fillText("PRESS ENTER TO RESTART", canvas.width / 2, 250);
+
+				ctx.textAlign = "left";
+				ctx.fillText(`Final Score: ${score}`, canvas.width / 2 - 125, 150);
+				ctx.fillText(`Accuracy:    ${Math.floor(totalAliensShot / totalBulletsShot * 100)}%`, canvas.width / 2 - 125, 175);
+				ctx.fillText(`UFOs shot:   ${specialAliensShot}`, canvas.width / 2 - 125, 200);  
+
+				drawGameInformation();
 			}
 
 			function drawEntities() {
@@ -435,6 +563,7 @@
 			}
 
 			function animate() {
+				console.log(`Score: ${score}\nWave: ${wave}\nSpecial Aliens Shot: ${specialAliensShot}\nTotal Aliens Shot: ${totalAliensShot}\nTotal Bullets Shot: ${totalBulletsShot}`);
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 				ctx.fillStyle = "black";
 				ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -469,7 +598,7 @@
 				maybeAlienFire();
 				updateAlienBullets();
 				updateShip();
-				updateSpecialAlien();
+				spawnSpecialAlien();
 
 				drawEntities();
 				drawInfo();
@@ -482,25 +611,26 @@
 
 			// Event Listeners
 			document.addEventListener("keydown", (e) => {
+				e.preventDefault();
 				if (e.key === "Enter") {
 					if (gameState === "start") {
+						initialize();
 						gameState = "playing";
 					} else if (gameState === "over") {
-						score = 0;
-						lives = 3;
 						initialize();
 						gameState = "playing";
 					}
 				}
-				if ((e.key === "p" || e.key === "Escape") && gameState === "playing") {
+				if ((e.key === "p" || e.key === "P" || e.key === "Escape") && gameState === "playing") {
 					gameState = "paused";
-				} else if ((e.key === "p" || e.key === "Escape") && gameState === "paused") {
+				} else if ((e.key === "p" || e.key === "P" || e.key === "Escape") && gameState === "paused") {
 					gameState = "playing";
 				}
 
 				if (gameState !== "playing") return;
 
 				if (e.key === " " && Date.now() - fireTime > fireRate) {
+					totalBulletsShot++;
 					fireTime = Date.now();
 					bullets.push({
 						x: ship.x + ship.width / 2 - 1,
@@ -526,6 +656,44 @@
 					rightMoving = false;
 				}
 			});
+
+			const base = "https://api.jsonbin.io/v3/b/";
+			const id = "685c0a9b8561e97a502b9bf0";
+			const key = "$2a$10$qoUUup4Q1rqAh6fX5Lxa0e0RCxjiKW7GREpe5xVcFpWxhUN51g27K";
+
+			async function getData() {
+				console.log("Fetching data...")
+				const response = await fetch(base + id, {
+					method: "GET",
+					headers: {
+						"X-Master-Key": key
+					}
+				});
+				const data = await response.json();
+				console.log("Data fetched.")
+				return data.record;
+			}
+
+			getData().then((r) => {
+				highScores = r.high_scores;
+				maxWave = r.max_wave;
+				maxSpecialAliensShot = r.max_special_aliens_shot;
+				maxAccuracy = r.max_accuracy;
+				dataLoaded = true;
+			});
+
+			async function updateData(updated) {
+				console.log("Updating database...")
+				await fetch(base + id, {
+					method: "PUT",
+					headers: {
+						"Content-Type": "application/json",
+						"X-Master-Key": key
+					},
+					body: JSON.stringify(updated)
+				});
+				console.log("Updated database.");
+			}
 		</script>
 		
 		<script>

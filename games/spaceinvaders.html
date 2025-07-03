@@ -23,7 +23,7 @@
 				display: flex;
 				justify-content: center;
 				align-items: center;
-				min-height: calc(80vh);
+				/* min-height: calc(80vh);*/
 				padding: 0px;
 			}
 			
@@ -34,6 +34,23 @@
 				transform: scale(0.85);
 				transform-origin: center;
 			}
+			
+			#username {
+				position: absolute;
+				left: 37.5%;
+				top: 40%; 
+				width: 15%;
+				height: 30px;
+			}
+
+			#submit {
+				position: absolute;
+				left: 55%;
+				top: 40%;
+				width: 7.5%;
+				height: 30px;
+				line-height: 15px;
+			}
 		</style>
 	</head>
 
@@ -41,10 +58,12 @@
 		<div id="navbar"></div>
 		<div class="game-container">
 			<canvas id="canvas" width="1000" height="625"></canvas>
+			<input id="username" type="text"></input>
+			<button id="submit" onclick="submitUsername()" class="btn btn-primary">Submit ➤</button>
 		</div>
 
 		
-		<div class="container mt-3 text-center">
+		<div class="container text-center">
 			<button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#gameDirectionsModal">
 				Game Directions
 			</button>
@@ -108,6 +127,10 @@
 			</div>
 		</div>
 
+		<div class="container text-center card bg-dark text-white mt-2">
+			<h1>Personal High Scores</h1>
+			<div id="personal-high-scores">Enter your username to see your personal high scores!</div>
+		</div>
 		
 		<script>
 			const canvas = document.getElementById("canvas");
@@ -160,7 +183,16 @@
 			let maxAccuracy = null;
 			let dataLoaded = false;
 
+			let pHighScore1 = null;
+			let pHighScore2 = null;
+			let pHighScore3 = null;
+			let pMaxWave = null;
+			let pMaxUfoShot = null;
+			let pMaxAccuracy = null;
+
 			let lastUpdatedRecords = Date.now();
+
+			let username = null;
 
 			function initialize() {
 				aliens = [];
@@ -425,13 +457,57 @@
 				if (score >= 3200 && accuracy > maxAccuracy) {
 					maxAccuracy = accuracy;
 				}
-				database = {
+
+				if (score > pHighScore1) {
+					pHighScore3 = pHighScore2;
+					pHighScore2 = pHighScore1;
+					pHighScore1 = score;
+				} else if (score > pHighScore2) {
+					pHighScore3 = pHighScore2;
+					pHighScore2 = score;
+				} else if (score > pHighScore3) {
+					pHighScore3 = score;
+				}
+				if (wave > pMaxWave) {
+					pMaxWave = wave;
+				}
+				if (specialAliensShot > pMaxUfoShot) {
+					pMaxUfoShot = specialAliensShot;
+				}
+				if (score >= 3200 && accuracy > pMaxAccuracy) {
+					console.log(score, accuracy, pMaxAccuracy)
+					pMaxAccuracy = accuracy;
+				}
+
+				personalRecords = {
+					high_scores: [
+						pHighScore1,
+						pHighScore2,
+						pHighScore3
+					],
+					max_wave: pMaxWave,
+					max_special_aliens_shot: pMaxUfoShot,
+					max_accuracy: pMaxAccuracy
+				}
+
+				getData().then((database) => {
+					database.high_scores = highScores;
+					database.max_wave = maxWave;
+					database.max_special_aliens_shot = maxSpecialAliensShot;
+					database.max_accuracy = maxAccuracy;
+					database[username] = personalRecords;
+					console.log(database);
+					updateData(database).then((r) => {
+						updatePersonalRecordsDisplay();
+					});
+				});
+				/*database = {
 					"high_scores": highScores,
 					"max_wave": maxWave,
 					"max_special_aliens_shot": maxSpecialAliensShot,
 					"max_accuracy": maxAccuracy
-				};
-				updateData(database);
+				};*/
+
 				// console.log("Updated records.")
 			}
 
@@ -516,7 +592,12 @@
 				ctx.textAlign = "center";
 				ctx.fillText("SPACE INVADERS", canvas.width / 2, 100);
 				ctx.font = "24px Monospace";
-				ctx.fillText("PRESS ENTER TO START", canvas.width / 2, 150);
+				if (username === null) {
+					ctx.fillText("ENTER YOUR USERNAME", canvas.width / 2, 150);
+				} else {
+					ctx.fillText("PRESS ENTER TO START", canvas.width / 2, 150);
+					ctx.fillText(`User: ${username}`, canvas.width / 2, 225);
+				}
 
 				drawGameInformation();
 			}
@@ -680,9 +761,9 @@
 				if (e.key === " ") {
 					e.preventDefault(); // prevent scrolling
 				}
-				
+
 				if (e.key === "Enter") {
-					if (gameState === "start") {
+					if (username !== null && gameState === "start") {
 						initialize();
 						gameState = "playing";
 					} else if (gameState === "over") {
@@ -740,6 +821,7 @@
 				});
 				const data = await response.json();
 				// console.log("Data fetched.")
+				console.log(data);
 				return data.record;
 			}
 
@@ -762,6 +844,54 @@
 					body: JSON.stringify(updated)
 				});
 				// console.log("Updated database.");
+			}
+
+			function submitUsername() {
+				username = document.getElementById("username").value.trim();
+				if (username === "") {
+					username = null;
+					alert("Username cannot be null.");
+					return;
+				}
+				document.getElementById("username").style = "display:none;";
+				document.getElementById("submit").style = "display:none;";
+				updatePersonalRecordsDisplay();
+			}
+
+			function updatePersonalRecordsDisplay() {
+				getData().then((data) => {
+					if (!data.hasOwnProperty(username)) {
+						console.log("triggered");
+						pHighScore1 = null;
+						pHighScore2 = null;
+						pHighScore3 = null;
+						pMaxWave = null;
+						pMaxUfoShot = null;
+						pMaxAccuracy = null;
+
+						personalRecords = {
+							high_scores: [
+								pHighScore1,
+								pHighScore2,
+								pHighScore3
+							],
+							max_wave: pMaxWave,
+							max_special_aliens_shot: pMaxUfoShot,
+							max_accuracy: pMaxAccuracy
+						}
+						data[username] = personalRecords;
+						updateData(data);
+					} else {
+						personalRecords = data[username];
+						pHighScore1 = personalRecords.high_scores[0];
+						pHighScore2 = personalRecords.high_scores[1];
+						pHighScore3 = personalRecords.high_scores[2];
+						pMaxWave = personalRecords.max_wave;
+						pMaxUfoShot = personalRecords.max_special_aliens_shot;
+						pMaxAccuracy = personalRecords.max_accuracy;
+					}
+					document.getElementById("personal-high-scores").innerHTML = `#1 Score: ${pHighScore1}<br>#2 Score: ${pHighScore2}<br>#3 Score: ${pHighScore3}<br>Max Wave: ${pMaxWave}<br>Max UFOs Shot: ${pMaxUfoShot}<br>Max Accuracy: ${pMaxAccuracy}`;
+				});
 			}
 		</script>
 		

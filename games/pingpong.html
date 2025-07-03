@@ -410,11 +410,16 @@
     }
     
     function keyPressed() {
+      if (keyCode === UP_ARROW || keyCode === DOWN_ARROW) {
+        return false;
+      }
+      
       // Pause/unpause game
       if (key === ' ') {
         if (gameStarted) {
           gamePaused = !gamePaused;
         }
+        return false;
       }
       
       // Restart game
@@ -433,8 +438,9 @@
         resetToMenu();
       }
     }
-    
-    // Load navbar
+  </script>
+
+  <script>
     $(document).ready(function() {
       $.get("navbar.html", function(data) {
         $("#navbar").replaceWith(data);

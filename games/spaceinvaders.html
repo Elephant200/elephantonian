@@ -470,7 +470,6 @@
 				async updateGlobalRecords(username, newScore, newWave, newUfos, newAccuracy) {
 					const data = await this.fetchData();
 					
-					// Initialize arrays if they don't exist (for backward compatibility)
 					if (!data.high_score_players) {
 						data.high_score_players = ["", "", ""];
 					}
@@ -640,6 +639,9 @@
 				if (aliens.length === 0 || aliens.length === 1 && specialAlien) {
 					wave++;
 					score += 750;
+					if (lives < 5) {
+						lives++;
+					}
 					alienFireRate = alienFireRate >= 20000 ? 0.9 * alienFireRate : 0.975 * alienFireRate;
 					alienSpeed = alienSpeed < 1.5 ? 1.05 * alienSpeed : 1.01 * alienSpeed;
 					initAliens();
@@ -866,11 +868,23 @@
 				ctx.font = "20px Arial";
 				ctx.textAlign = "left";
 				ctx.fillText(`Score: ${score}`, 15, 30);
+				
+				// Show all-time high score at top right
 				ctx.textAlign = "right";
-				ctx.fillText(`Lives: ${lives}`, canvas.width - 15, 30);
+				if (globalData && globalData.high_scores[0]) {
+					ctx.fillText(`All-Time High: ${globalData.high_scores[0]}`, canvas.width - 15, 30);
+				} else {
+					ctx.fillText(`All-Time High: 0`, canvas.width - 15, 30);
+				}
+				
 				ctx.font = "25px Arial";
 				ctx.textAlign = "center";
 				ctx.fillText(`Wave ${wave}`, canvas.width / 2, 32.5);
+				
+				const totalAliens = aliens.filter(alien => alien.type !== 4).length;
+				const totalStartingAliens = 45;
+				ctx.font = "18px Arial";
+				ctx.fillText(`[${totalStartingAliens - totalAliens}/${totalStartingAliens}]`, canvas.width / 2, 60);
 			}
 
 			function drawStartScreen() {
@@ -988,10 +1002,15 @@
 			}
 
 			function drawLives() {
+				ctx.fillStyle = "white";
+				ctx.font = "20px Arial";
+				ctx.textAlign = "left";
+				ctx.fillText(`Lives: ${lives}`, 15, 620);
+				
 				for (let i = 0; i < lives - 1; i++) {
 					ctx.fillStyle = "rgb(121, 251, 83)";
-					ctx.fillRect(25 + (ship.width / 2 + 25) * i, 600, ship.width / 2, ship.height / 2);
-					ctx.fillRect(25 + (ship.width / 2 + 25) * i + ship.width / 4 - 2.5, 592.5, 5, 7.5);
+					ctx.fillRect(100 + (ship.width / 2 + 25) * i, 600, ship.width / 2, ship.height / 2);
+					ctx.fillRect(100 + (ship.width / 2 + 25) * i + ship.width / 4 - 2.5, 592.5, 5, 7.5);
 				}
 			}
 
@@ -1064,7 +1083,9 @@
 
 				if (gameState !== "playing") return;
 
-				if (e.key === " " && Date.now() - fireTime > fireRate) {
+				let shipAlive = ship.deathTime === 0 || Date.now() - ship.deathTime > 1000;
+				
+				if (e.key === " " && Date.now() - fireTime > fireRate && shipAlive) {
 					totalBulletsShot++;
 					fireTime = Date.now();
 					bullets.push({
@@ -1075,10 +1096,10 @@
 						dead: false
 					});
 				}
-				if (e.key === "ArrowLeft") {
+				if (e.key === "ArrowLeft" && shipAlive) {
 					leftMoving = true;
 				}
-				if (e.key === "ArrowRight") {
+				if (e.key === "ArrowRight" && shipAlive) {
 					rightMoving = true;
 				}
 			});
@@ -1111,7 +1132,7 @@
 					return;
 				}
 				
-				// Basic validation - only alphanumeric and some special characters
+				// Only alphanumeric and some special characters
 				if (!/^[a-zA-Z0-9_-]+$/.test(usernameInput)) {
 					alert("Username can only contain letters, numbers, underscores, and hyphens.");
 					return;
@@ -1127,7 +1148,6 @@
 				try {
 					globalData = await dbManager.fetchData(forceRefresh);
 					
-					// Update high scores with player names
 					const score1El = document.getElementById("global-score-1");
 					const score2El = document.getElementById("global-score-2");
 					const score3El = document.getElementById("global-score-3");
@@ -1142,7 +1162,6 @@
 					ufosEl.textContent = globalData.max_special_aliens_shot || 0;
 					accuracyEl.textContent = `${globalData.max_accuracy || 0}%`;
 					
-					// Add tooltips with player names using both title and data-tooltip for better compatibility
 					if (globalData.high_score_players) {
 						if (globalData.high_score_players[0]) {
 							score1El.title = `Achieved by: ${globalData.high_score_players[0]}`;

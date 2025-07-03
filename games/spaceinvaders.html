@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -23,7 +24,6 @@
 				display: flex;
 				justify-content: center;
 				align-items: center;
-				/* min-height: calc(80vh);*/
 				padding: 0px;
 			}
 			
@@ -35,21 +35,189 @@
 				transform-origin: center;
 			}
 			
-			#username {
+			.username-container {
 				position: absolute;
-				left: 37.5%;
-				top: 40%; 
-				width: 15%;
-				height: 30px;
+				left: 50%;
+				top: 40%;
+				transform: translateX(-50%);
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				background: rgba(0, 0, 0, 0.8);
+				padding: 20px;
+				border-radius: 10px;
+				border: 2px solid white;
+			}
+
+			#username {
+				width: 200px;
+				height: 40px;
+				padding: 8px;
+				border: 2px solid #3498db;
+				border-radius: 5px;
+				font-size: 16px;
 			}
 
 			#submit {
+				height: 40px;
+				padding: 0 20px;
+				border: none;
+				border-radius: 5px;
+				background-color: #3498db;
+				color: white;
+				font-size: 16px;
+				cursor: pointer;
+				transition: background-color 0.3s;
+			}
+
+			#submit:hover {
+				background-color: #2980b9;
+			}
+
+			.controls-row {
+				display: flex;
+				justify-content: center;
+				gap: 20px;
+				margin-top: 20px;
+			}
+
+			.score-cards-container {
+				display: flex;
+				justify-content: center;
+				gap: 20px;
+				margin-top: 20px;
+				flex-wrap: wrap;
+			}
+
+			.score-card {
+				background: linear-gradient(135deg, #2c3e50, #34495e);
+				border: 2px solid #3498db;
+				border-radius: 15px;
+				padding: 20px;
+				color: white;
+				box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+				transition: transform 0.3s ease, box-shadow 0.3s ease;
+				width: 300px;
+			}
+
+			.score-card:hover {
+				transform: translateY(-5px);
+				box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+			}
+
+			.score-card h4 {
+				text-align: center;
+				margin-bottom: 15px;
+				color: #3498db;
+				font-size: 1.3em;
+				border-bottom: 2px solid #3498db;
+				padding-bottom: 8px;
+			}
+
+			.score-item {
+				display: flex;
+				justify-content: space-between;
+				margin-bottom: 8px;
+				padding: 5px 0;
+				border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+			}
+
+			.score-item:last-child {
+				border-bottom: none;
+			}
+
+			.score-label {
+				font-weight: bold;
+				color: #ecf0f1;
+			}
+
+			.score-value {
+				color: #f39c12;
+				font-weight: bold;
+				position: relative;
+			}
+
+			/* Only show help cursor for global scores with tooltips */
+			.score-value[title] {
+				cursor: help;
+			}
+
+			.score-value[title]:hover {
+				color: #e67e22;
+			}
+
+			/* Enhanced tooltip styles */
+			.score-value[title] {
+				position: relative;
+				cursor: help;
+			}
+
+			/* Custom tooltip for better visibility */
+			.score-value[data-tooltip]:hover::after {
+				content: attr(data-tooltip);
 				position: absolute;
-				left: 55%;
-				top: 40%;
-				width: 7.5%;
-				height: 30px;
-				line-height: 15px;
+				bottom: 125%;
+				left: 50%;
+				transform: translateX(-50%);
+				background-color: rgba(0, 0, 0, 0.9);
+				color: white;
+				padding: 8px 12px;
+				border-radius: 6px;
+				font-size: 14px;
+				white-space: nowrap;
+				z-index: 1000;
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+			}
+
+			.score-value[data-tooltip]:hover::before {
+				content: "";
+				position: absolute;
+				bottom: 115%;
+				left: 50%;
+				transform: translateX(-50%);
+				border: 5px solid transparent;
+				border-top-color: rgba(0, 0, 0, 0.9);
+				z-index: 1000;
+			}
+
+			.game-directions-btn {
+				background: linear-gradient(135deg, #27ae60, #2ecc71);
+				border: none;
+				border-radius: 10px;
+				padding: 12px 25px;
+				color: white;
+				font-size: 16px;
+				font-weight: bold;
+				cursor: pointer;
+				transition: all 0.3s ease;
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			}
+
+			.game-directions-btn:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+				background: linear-gradient(135deg, #229954, #27ae60);
+			}
+
+			@media (max-width: 768px) {
+				.score-cards-container {
+					flex-direction: column;
+					align-items: center;
+				}
+				
+				.score-card {
+					width: 90%;
+					max-width: 400px;
+				}
+
+				.username-container {
+					flex-direction: column;
+					gap: 15px;
+				}
+
+				#username {
+					width: 100%;
+				}
 			}
 		</style>
 	</head>
@@ -58,14 +226,17 @@
 		<div id="navbar"></div>
 		<div class="game-container">
 			<canvas id="canvas" width="1000" height="625"></canvas>
-			<input id="username" type="text"></input>
-			<button id="submit" onclick="submitUsername()" class="btn btn-primary">Submit ➤</button>
+			<div class="username-container" id="usernameContainer">
+				<input id="username" type="text" placeholder="Enter your username..." maxlength="20">
+				<button id="submit" onclick="submitUsername()" class="btn">
+					<i class="fas fa-user-plus"></i> Submit
+				</button>
+			</div>
 		</div>
 
-		
-		<div class="container text-center">
-			<button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#gameDirectionsModal">
-				Game Directions
+		<div class="controls-row">
+			<button type="button" class="game-directions-btn" data-toggle="modal" data-target="#gameDirectionsModal">
+				<i class="fas fa-gamepad"></i> Game Directions
 			</button>
 		</div>
 
@@ -127,9 +298,45 @@
 			</div>
 		</div>
 
-		<div class="container text-center card bg-dark text-white mt-2">
-			<h1>Personal High Scores</h1>
-			<div id="personal-high-scores">Enter your username to see your personal high scores!</div>
+		<div class="score-cards-container">
+			<div class="score-card">
+				<h4><i class="fas fa-trophy"></i> Global High Scores</h4>
+				<div id="global-high-scores">
+					<div class="score-item">
+						<span class="score-label">#1 Score:</span>
+						<span class="score-value" id="global-score-1">Loading...</span>
+					</div>
+					<div class="score-item">
+						<span class="score-label">#2 Score:</span>
+						<span class="score-value" id="global-score-2">Loading...</span>
+					</div>
+					<div class="score-item">
+						<span class="score-label">#3 Score:</span>
+						<span class="score-value" id="global-score-3">Loading...</span>
+					</div>
+					<div class="score-item">
+						<span class="score-label">Highest Wave:</span>
+						<span class="score-value" id="global-wave">Loading...</span>
+					</div>
+					<div class="score-item">
+						<span class="score-label">Most UFOs Shot:</span>
+						<span class="score-value" id="global-ufos">Loading...</span>
+					</div>
+					<div class="score-item">
+						<span class="score-label">Best Accuracy:</span>
+						<span class="score-value" id="global-accuracy">Loading...</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="score-card">
+				<h4><i class="fas fa-user"></i> Personal High Scores</h4>
+				<div id="personal-high-scores">
+					<div class="text-center" style="color: #95a5a6; font-style: italic;">
+						Enter your username to see your personal high scores!
+					</div>
+				</div>
+			</div>
 		</div>
 		
 		<script>
@@ -177,22 +384,135 @@
 			let totalAliensShot = 0;
 			let totalBulletsShot = 0;
 
-			let highScores = null;
-			let maxWave = null;
-			let maxSpecialAliensShot = null;
-			let maxAccuracy = null;
-			let dataLoaded = false;
+			class DatabaseManager {
+				constructor() {
+					this.baseUrl = "https://api.jsonbin.io/v3/b/";
+					this.binId = "685c0a9b8561e97a502b9bf0";
+					this.apiKey = "$2a$10$qoUUup4Q1rqAh6fX5Lxa0e0RCxjiKW7GREpe5xVcFpWxhUN51g27K";
+					this.cache = null;
+				}
 
-			let pHighScore1 = null;
-			let pHighScore2 = null;
-			let pHighScore3 = null;
-			let pMaxWave = null;
-			let pMaxUfoShot = null;
-			let pMaxAccuracy = null;
+				async fetchData(forceRefresh = false) {
+					if (this.cache && !forceRefresh) {
+						return this.cache;
+					}
 
-			let lastUpdatedRecords = Date.now();
+					try {
+						const response = await fetch(this.baseUrl + this.binId, {
+							method: "GET",
+							headers: {
+								"X-Master-Key": this.apiKey
+							}
+						});
+						
+						if (!response.ok) {
+							throw new Error(`HTTP error! status: ${response.status}`);
+						}
+						
+						const data = await response.json();
+						this.cache = data.record;
+						return this.cache;
+					} catch (error) {
+						console.error("Error fetching data:", error);
+						return this.getDefaultData();
+					}
+				}
 
+				async updateData(data) {
+					try {
+						const response = await fetch(this.baseUrl + this.binId, {
+							method: "PUT",
+							headers: {
+								"Content-Type": "application/json",
+								"X-Master-Key": this.apiKey
+							},
+							body: JSON.stringify(data)
+						});
+
+						if (!response.ok) {
+							throw new Error(`HTTP error! status: ${response.status}`);
+						}
+
+						this.cache = data;
+						return true;
+					} catch (error) {
+						console.error("Error updating data:", error);
+						return false;
+					}
+				}
+
+				getDefaultData() {
+					return {
+						high_scores: [0, 0, 0],
+						high_score_players: ["", "", ""],
+						max_wave: 1,
+						max_wave_player: "",
+						max_special_aliens_shot: 0,
+						max_special_aliens_shot_player: "",
+						max_accuracy: 0,
+						max_accuracy_player: ""
+					};
+				}
+
+				async getUserData(username) {
+					if (!username) return null;
+					const data = await this.fetchData();
+					return data[username] || null;
+				}
+
+				async updateUserData(username, userData) {
+					if (!username) return false;
+					const data = await this.fetchData();
+					data[username] = userData;
+					return await this.updateData(data);
+				}
+
+				async updateGlobalRecords(username, newScore, newWave, newUfos, newAccuracy) {
+					const data = await this.fetchData();
+					
+					// Initialize arrays if they don't exist (for backward compatibility)
+					if (!data.high_score_players) {
+						data.high_score_players = ["", "", ""];
+					}
+					
+					if (newScore > data.high_scores[0]) {
+						data.high_scores[2] = data.high_scores[1];
+						data.high_scores[1] = data.high_scores[0];
+						data.high_scores[0] = newScore;
+						data.high_score_players[2] = data.high_score_players[1];
+						data.high_score_players[1] = data.high_score_players[0];
+						data.high_score_players[0] = username;
+					} else if (newScore > data.high_scores[1]) {
+						data.high_scores[2] = data.high_scores[1];
+						data.high_scores[1] = newScore;
+						data.high_score_players[2] = data.high_score_players[1];
+						data.high_score_players[1] = username;
+					} else if (newScore > data.high_scores[2]) {
+						data.high_scores[2] = newScore;
+						data.high_score_players[2] = username;
+					}
+
+					if (newWave > data.max_wave) {
+						data.max_wave = newWave;
+						data.max_wave_player = username;
+					}
+					if (newUfos > data.max_special_aliens_shot) {
+						data.max_special_aliens_shot = newUfos;
+						data.max_special_aliens_shot_player = username;
+					}
+					if (newAccuracy > data.max_accuracy) {
+						data.max_accuracy = newAccuracy;
+						data.max_accuracy_player = username;
+					}
+
+					return await this.updateData(data);
+				}
+			}
+
+			const dbManager = new DatabaseManager();
 			let username = null;
+			let globalData = null;
+			let personalData = null;
 
 			function initialize() {
 				aliens = [];
@@ -322,7 +642,6 @@
 					score += 750;
 					alienFireRate = alienFireRate >= 20000 ? 0.9 * alienFireRate : 0.975 * alienFireRate;
 					alienSpeed = alienSpeed < 1.5 ? 1.05 * alienSpeed : 1.01 * alienSpeed;
-					// console.log(alienFireRate);
 					initAliens();
 				}
 
@@ -331,7 +650,6 @@
 					alien.x += alien.speedX;
 					if (alien.type !== 4 && (alien.x + alien.width >= canvas.width || alien.x <= 0)) {
 						reverse = true;
-						// console.log(alien.type);
 					}
 					if (alien.type === 4 && alien.x >= canvas.width) {
 						alien.dead = true;
@@ -415,7 +733,7 @@
 			}
 
 			function spawnSpecialAlien() {
-				if (!specialAlien) { // one currently exists
+				if (!specialAlien) {
 					if (lastSpecialAlienSpawn + specialAlienCooldown <= Date.now()) {
 						aliens.push({
 							x: -120,
@@ -430,85 +748,54 @@
 						});
 						specialAlien = true;
 						lastSpecialAlienSpawn = Date.now();
-						specialAlienCooldown = Math.floor(Math.random() * 20000) + 20000; // update cooldown for next time
+						specialAlienCooldown = Math.floor(Math.random() * 20000) + 20000;
 					}
 				}
 			}
 
-			function updateRecords() {
-				// console.log("Update records");
-				if (score > highScores[0]) {
-					highScores[2] = highScores[1];
-					highScores[1] = highScores[0];
-					highScores[0] = score;
-				} else if (score > highScores[1]) {
-					highScores[2] = highScores[1];
-					highScores[1] = score;
-				} else if (score > highScores[2]) {
-					highScores[2] = score;
-				}
-				if (wave > maxWave) {
-					maxWave = wave;
-				}
-				if (specialAliensShot > maxSpecialAliensShot) {
-					maxSpecialAliensShot = specialAliensShot;
-				}
-				let accuracy = Math.floor(totalAliensShot / totalBulletsShot * 100)
-				if (score >= 3200 && accuracy > maxAccuracy) {
-					maxAccuracy = accuracy;
+			async function updateRecords() {
+				if (!username) return;
+
+				const accuracy = totalBulletsShot > 0 ? Math.floor(totalAliensShot / totalBulletsShot * 100) : 0;
+				
+				if (score >= 3200) {
+					await dbManager.updateGlobalRecords(username, score, wave, specialAliensShot, accuracy);
+				} else {
+					await dbManager.updateGlobalRecords(username, score, wave, specialAliensShot, 0);
 				}
 
-				if (score > pHighScore1) {
-					pHighScore3 = pHighScore2;
-					pHighScore2 = pHighScore1;
-					pHighScore1 = score;
-				} else if (score > pHighScore2) {
-					pHighScore3 = pHighScore2;
-					pHighScore2 = score;
-				} else if (score > pHighScore3) {
-					pHighScore3 = score;
-				}
-				if (wave > pMaxWave) {
-					pMaxWave = wave;
-				}
-				if (specialAliensShot > pMaxUfoShot) {
-					pMaxUfoShot = specialAliensShot;
-				}
-				if (score >= 3200 && accuracy > pMaxAccuracy) {
-					console.log(score, accuracy, pMaxAccuracy)
-					pMaxAccuracy = accuracy;
+				const currentPersonal = await dbManager.getUserData(username) || {
+					high_scores: [0, 0, 0],
+					max_wave: 1,
+					max_special_aliens_shot: 0,
+					max_accuracy: 0
+				};
+
+				if (score > currentPersonal.high_scores[0]) {
+					currentPersonal.high_scores[2] = currentPersonal.high_scores[1];
+					currentPersonal.high_scores[1] = currentPersonal.high_scores[0];
+					currentPersonal.high_scores[0] = score;
+				} else if (score > currentPersonal.high_scores[1]) {
+					currentPersonal.high_scores[2] = currentPersonal.high_scores[1];
+					currentPersonal.high_scores[1] = score;
+				} else if (score > currentPersonal.high_scores[2]) {
+					currentPersonal.high_scores[2] = score;
 				}
 
-				personalRecords = {
-					high_scores: [
-						pHighScore1,
-						pHighScore2,
-						pHighScore3
-					],
-					max_wave: pMaxWave,
-					max_special_aliens_shot: pMaxUfoShot,
-					max_accuracy: pMaxAccuracy
+				if (wave > currentPersonal.max_wave) {
+					currentPersonal.max_wave = wave;
+				}
+				if (specialAliensShot > currentPersonal.max_special_aliens_shot) {
+					currentPersonal.max_special_aliens_shot = specialAliensShot;
+				}
+				if (score >= 3200 && accuracy > currentPersonal.max_accuracy) {
+					currentPersonal.max_accuracy = accuracy;
 				}
 
-				getData().then((database) => {
-					database.high_scores = highScores;
-					database.max_wave = maxWave;
-					database.max_special_aliens_shot = maxSpecialAliensShot;
-					database.max_accuracy = maxAccuracy;
-					database[username] = personalRecords;
-					console.log(database);
-					updateData(database).then((r) => {
-						updatePersonalRecordsDisplay();
-					});
-				});
-				/*database = {
-					"high_scores": highScores,
-					"max_wave": maxWave,
-					"max_special_aliens_shot": maxSpecialAliensShot,
-					"max_accuracy": maxAccuracy
-				};*/
-
-				// console.log("Updated records.")
+				await dbManager.updateUserData(username, currentPersonal);
+				
+				await loadGlobalScores(true);
+				await loadPersonalScores();
 			}
 
 			function drawGameInformation() {
@@ -540,13 +827,13 @@
 				ctx.fillText("Highest Accuracy: ", 570, 350 + spacing * 5);
 
 				ctx.textAlign = "right";
-				if (dataLoaded) {
-					ctx.fillText(highScores[0], 905, 350);
-					ctx.fillText(highScores[1], 905, 350 + spacing * 1);
-					ctx.fillText(highScores[2], 905, 350 + spacing * 2);
-					ctx.fillText(maxWave, 905, 350 + spacing * 3);
-					ctx.fillText(maxSpecialAliensShot, 905, 350 + spacing * 4);
-					ctx.fillText(`${maxAccuracy}%`, 905, 350 + spacing * 5);
+				if (globalData) {
+					ctx.fillText(globalData.high_scores[0], 905, 350);
+					ctx.fillText(globalData.high_scores[1], 905, 350 + spacing * 1);
+					ctx.fillText(globalData.high_scores[2], 905, 350 + spacing * 2);
+					ctx.fillText(globalData.max_wave, 905, 350 + spacing * 3);
+					ctx.fillText(globalData.max_special_aliens_shot, 905, 350 + spacing * 4);
+					ctx.fillText(`${globalData.max_accuracy}%`, 905, 350 + spacing * 5);
 				} else {
 					ctx.fillText("...", 905, 350);
 					ctx.fillText("...", 905, 350 + spacing * 1);
@@ -630,7 +917,6 @@
 			}
 
 			function drawEntities() {
-
 				// aliens
 				ctx.fillStyle = "white";
 				aliens.forEach((a) => {
@@ -710,7 +996,6 @@
 			}
 
 			function animate() {
-				// console.log(`Score: ${score}\nWave: ${wave}\nSpecial Aliens Shot: ${specialAliensShot}\nTotal Aliens Shot: ${totalAliensShot}\nTotal Bullets Shot: ${totalBulletsShot}`);
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 				ctx.fillStyle = "black";
 				ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -733,7 +1018,7 @@
 					drawReload();
 					drawLives();
 					drawPauseScreen();
-					resetAlienLastFireTime(); // to prevent all of them from shooting when unpaused
+					resetAlienLastFireTime();
 					requestAnimationFrame(animate);
 					return;
 				}
@@ -759,7 +1044,7 @@
 			// Event Listeners
 			document.addEventListener("keydown", (e) => {
 				if (e.key === " ") {
-					e.preventDefault(); // prevent scrolling
+					e.preventDefault();
 				}
 
 				if (e.key === "Enter") {
@@ -807,92 +1092,141 @@
 				}
 			});
 
-			const base = "https://api.jsonbin.io/v3/b/";
-			const id = "685c0a9b8561e97a502b9bf0";
-			const key = "$2a$10$qoUUup4Q1rqAh6fX5Lxa0e0RCxjiKW7GREpe5xVcFpWxhUN51g27K";
-
-			async function getData() {
-				// console.log("Fetching data...")
-				const response = await fetch(base + id, {
-					method: "GET",
-					headers: {
-						"X-Master-Key": key
-					}
-				});
-				const data = await response.json();
-				// console.log("Data fetched.")
-				console.log(data);
-				return data.record;
-			}
-
-			getData().then((r) => {
-				highScores = r.high_scores;
-				maxWave = r.max_wave;
-				maxSpecialAliensShot = r.max_special_aliens_shot;
-				maxAccuracy = r.max_accuracy;
-				dataLoaded = true;
+			// Username input event listeners
+			document.getElementById("username").addEventListener("keypress", function(e) {
+				if (e.key === "Enter") {
+					submitUsername();
+				}
 			});
 
-			async function updateData(updated) {
-				// console.log("Updating database...")
-				await fetch(base + id, {
-					method: "PUT",
-					headers: {
-						"Content-Type": "application/json",
-						"X-Master-Key": key
-					},
-					body: JSON.stringify(updated)
-				});
-				// console.log("Updated database.");
-			}
-
-			function submitUsername() {
-				username = document.getElementById("username").value.trim();
-				if (username === "") {
-					username = null;
-					alert("Username cannot be null.");
+			async function submitUsername() {
+				const usernameInput = document.getElementById("username").value.trim();
+				if (usernameInput === "") {
+					alert("Username cannot be empty.");
 					return;
 				}
-				document.getElementById("username").style = "display:none;";
-				document.getElementById("submit").style = "display:none;";
-				updatePersonalRecordsDisplay();
+				
+				if (usernameInput.length > 20) {
+					alert("Username must be 20 characters or less.");
+					return;
+				}
+				
+				// Basic validation - only alphanumeric and some special characters
+				if (!/^[a-zA-Z0-9_-]+$/.test(usernameInput)) {
+					alert("Username can only contain letters, numbers, underscores, and hyphens.");
+					return;
+				}
+
+				username = usernameInput;
+				document.getElementById("usernameContainer").style.display = "none";
+				
+				await loadPersonalScores();
 			}
 
-			function updatePersonalRecordsDisplay() {
-				getData().then((data) => {
-					if (!data.hasOwnProperty(username)) {
-						console.log("triggered");
-						pHighScore1 = null;
-						pHighScore2 = null;
-						pHighScore3 = null;
-						pMaxWave = null;
-						pMaxUfoShot = null;
-						pMaxAccuracy = null;
-
-						personalRecords = {
-							high_scores: [
-								pHighScore1,
-								pHighScore2,
-								pHighScore3
-							],
-							max_wave: pMaxWave,
-							max_special_aliens_shot: pMaxUfoShot,
-							max_accuracy: pMaxAccuracy
+			async function loadGlobalScores(forceRefresh = false) {
+				try {
+					globalData = await dbManager.fetchData(forceRefresh);
+					
+					// Update high scores with player names
+					const score1El = document.getElementById("global-score-1");
+					const score2El = document.getElementById("global-score-2");
+					const score3El = document.getElementById("global-score-3");
+					const waveEl = document.getElementById("global-wave");
+					const ufosEl = document.getElementById("global-ufos");
+					const accuracyEl = document.getElementById("global-accuracy");
+					
+					score1El.textContent = globalData.high_scores[0] || 0;
+					score2El.textContent = globalData.high_scores[1] || 0;
+					score3El.textContent = globalData.high_scores[2] || 0;
+					waveEl.textContent = globalData.max_wave || 1;
+					ufosEl.textContent = globalData.max_special_aliens_shot || 0;
+					accuracyEl.textContent = `${globalData.max_accuracy || 0}%`;
+					
+					// Add tooltips with player names using both title and data-tooltip for better compatibility
+					if (globalData.high_score_players) {
+						if (globalData.high_score_players[0]) {
+							score1El.title = `Achieved by: ${globalData.high_score_players[0]}`;
+							score1El.setAttribute('data-tooltip', `Achieved by: ${globalData.high_score_players[0]}`);
 						}
-						data[username] = personalRecords;
-						updateData(data);
-					} else {
-						personalRecords = data[username];
-						pHighScore1 = personalRecords.high_scores[0];
-						pHighScore2 = personalRecords.high_scores[1];
-						pHighScore3 = personalRecords.high_scores[2];
-						pMaxWave = personalRecords.max_wave;
-						pMaxUfoShot = personalRecords.max_special_aliens_shot;
-						pMaxAccuracy = personalRecords.max_accuracy;
+						if (globalData.high_score_players[1]) {
+							score2El.title = `Achieved by: ${globalData.high_score_players[1]}`;
+							score2El.setAttribute('data-tooltip', `Achieved by: ${globalData.high_score_players[1]}`);
+						}
+						if (globalData.high_score_players[2]) {
+							score3El.title = `Achieved by: ${globalData.high_score_players[2]}`;
+							score3El.setAttribute('data-tooltip', `Achieved by: ${globalData.high_score_players[2]}`);
+						}
 					}
-					document.getElementById("personal-high-scores").innerHTML = `#1 Score: ${pHighScore1}<br>#2 Score: ${pHighScore2}<br>#3 Score: ${pHighScore3}<br>Max Wave: ${pMaxWave}<br>Max UFOs Shot: ${pMaxUfoShot}<br>Max Accuracy: ${pMaxAccuracy}`;
-				});
+					
+					if (globalData.max_wave_player) {
+						waveEl.title = `Achieved by: ${globalData.max_wave_player}`;
+						waveEl.setAttribute('data-tooltip', `Achieved by: ${globalData.max_wave_player}`);
+					}
+					if (globalData.max_special_aliens_shot_player) {
+						ufosEl.title = `Achieved by: ${globalData.max_special_aliens_shot_player}`;
+						ufosEl.setAttribute('data-tooltip', `Achieved by: ${globalData.max_special_aliens_shot_player}`);
+					}
+					if (globalData.max_accuracy_player) {
+						accuracyEl.title = `Achieved by: ${globalData.max_accuracy_player}`;
+						accuracyEl.setAttribute('data-tooltip', `Achieved by: ${globalData.max_accuracy_player}`);
+					}
+					
+				} catch (error) {
+					console.error("Error loading global scores:", error);
+				}
 			}
+
+			async function loadPersonalScores() {
+				if (!username) return;
+				
+				try {
+					personalData = await dbManager.getUserData(username);
+					
+					if (personalData) {
+						document.getElementById("personal-high-scores").innerHTML = `
+							<div class="score-item">
+								<span class="score-label">#1 Score:</span>
+								<span class="score-value">${personalData.high_scores[0] || 0}</span>
+							</div>
+							<div class="score-item">
+								<span class="score-label">#2 Score:</span>
+								<span class="score-value">${personalData.high_scores[1] || 0}</span>
+							</div>
+							<div class="score-item">
+								<span class="score-label">#3 Score:</span>
+								<span class="score-value">${personalData.high_scores[2] || 0}</span>
+							</div>
+							<div class="score-item">
+								<span class="score-label">Max Wave:</span>
+								<span class="score-value">${personalData.max_wave || 1}</span>
+							</div>
+							<div class="score-item">
+								<span class="score-label">Max UFOs Shot:</span>
+								<span class="score-value">${personalData.max_special_aliens_shot || 0}</span>
+							</div>
+							<div class="score-item">
+								<span class="score-label">Max Accuracy:</span>
+								<span class="score-value">${personalData.max_accuracy || 0}%</span>
+							</div>
+						`;
+					} else {
+						document.getElementById("personal-high-scores").innerHTML = `
+							<div class="text-center" style="color: #95a5a6; font-style: italic;">
+								No records yet! Start playing to set your first scores.
+							</div>
+						`;
+					}
+				} catch (error) {
+					console.error("Error loading personal scores:", error);
+					document.getElementById("personal-high-scores").innerHTML = `
+						<div class="text-center" style="color: #e74c3c; font-style: italic;">
+							Error loading personal scores.
+						</div>
+					`;
+				}
+			}
+
+			loadGlobalScores();
 		</script>
 		
 		<script>

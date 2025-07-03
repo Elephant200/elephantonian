@@ -869,12 +869,16 @@
 				ctx.textAlign = "left";
 				ctx.fillText(`Score: ${score}`, 15, 30);
 				
-				// Show all-time high score at top right
 				ctx.textAlign = "right";
 				if (globalData && globalData.high_scores[0]) {
-					ctx.fillText(`All-Time High: ${globalData.high_scores[0]}`, canvas.width - 15, 30);
+						ctx.fillText(`Global High: ${globalData.high_scores[0]}`, canvas.width - 15, 30);
 				} else {
-					ctx.fillText(`All-Time High: 0`, canvas.width - 15, 30);
+						ctx.fillText(`Global High: 0`, canvas.width - 15, 30);
+				}
+				if (personalData && personalData.high_scores[0]) {
+						ctx.fillText(`Personal High: ${personalData.high_scores[0]}`, canvas.width - 15, 60);
+				} else {
+						ctx.fillText(`Personal High: 0`, canvas.width - 15, 60);
 				}
 				
 				ctx.font = "25px Arial";

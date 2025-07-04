@@ -102,10 +102,8 @@
 
 
 		function play() {
-
-			$("#play").css("display", "none");
-			$("#stop").css("display", "block");
-
+			$("#panel").html('<h1 id="timer" class="text-danger">30 seconds left</h1>');
+			$("#play").text("Play!");
 			var totalHits = 0;
 			var totalSeconds = 30;
 			var time = 0;
@@ -270,8 +268,11 @@
 			];
 
 			var timeLeft = 30;
-
 			var balloons = [];
+			var intervalId = null;
+
+			$("#play").css("display", "none");
+			$("#stop").css("display", "block");
 
 			game = setInterval(function() {
 				time = time + 1;
@@ -279,7 +280,7 @@
 				$("#timer").text(timeLeft + " seconds left");
 
 				for (var i = 0; i < 2; i++) {
-					var numBottom = randint(0,100);
+					var numBottom = randint(20,100);
 					var numLeft = randint(0,600);
 					while (true) {
 						var color = choice(colors).toLowerCase();
@@ -296,15 +297,9 @@
 						"left":numLeft
 					}).appendTo("#panel");
 
-					if (timeLeft < 1) {
-						clearInterval(game);
-						$("#panel").html("<h2 class='text-danger'>Game Over</h2><br/><h3 class='text-danger'>Score: " + totalHits + "</h3>");
-					}
-
 					clonediv.animate({
 						bottom:"700px"
 					}, 20000, function() {
-						balloons.remove(clonediv);
 						clonediv.remove();
 					});
 
@@ -313,23 +308,22 @@
 						totalHits = totalHits + 1;
 					});
 				}
+
+				if (timeLeft < 1) {
+					clearInterval(game);
+					$("#panel").html("<h2 class='text-danger'>Game Over</h2><br/><h3 class='text-danger'>Score: " + totalHits + "</h3>");
+					$("#play").text("Restart").css("display", "block");
+					$("#stop").css("display", "none");
+				}
 			}, 1000);
-			setTimeout(function() {
-				$("#play").css("display", "block");
-				$("#stop").css("display", "none");
-				
-			}, 30000);
 		}
 
 		function stop() {
 			clearInterval(game);
-			var balls = document.getElementsByClassName("balloon");
-			for (var i=0; i<balls.length; i++) {
-				balls[i].style.display = "none";
-			}
-			$("#play").css("display", "block");
+			$(".balloon").remove();
+			$("#panel").html('<h1 id="timer" class="text-danger">30 seconds left</h1>');
+			$("#play").text("Play!").css("display", "block");
 			$("#stop").css("display", "none");
-			document.getElementById("<h1 id='timer' class='text-danger'>30 seconds left</h1>")
 		}
 	</script>
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

@@ -391,7 +391,7 @@
 				constructor() {
 					this.baseUrl = "https://api.jsonbin.io/v3/b/";
 					this.binId = "685c0a9b8561e97a502b9bf0";
-					this.apiKey = "$2a$10$qoUUup4Q1rqAh6fX5Lxa0e0RCxjiKW7GREpe5xVcFpWxhUN51g27K";
+					this.apiKey = "$2a$10$r6KYhaHj/MsJr68J9YkBQO0nHAdeypKsb2jrHGrp6BP/k8MsEcLHK";
 					this.cache = null;
 				}
 
@@ -404,7 +404,7 @@
 						const response = await fetch(this.baseUrl + this.binId, {
 							method: "GET",
 							headers: {
-								"X-Master-Key": this.apiKey
+								"X-Access-Key": this.apiKey
 							}
 						});
 						

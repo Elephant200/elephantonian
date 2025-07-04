@@ -1127,6 +1127,12 @@
 				}
 			});
 
+			document.addEventListener("visibilitychange", () => {
+				if (document.hidden && gameState === "playing") {
+					gameState = "paused";
+				}
+				});
+
 			async function submitUsername() {
 				const usernameInput = document.getElementById("username").value.trim();
 				if (usernameInput === "") {

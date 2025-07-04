@@ -359,10 +359,10 @@
 			let aliens = [];
 			let bullets = [];
 			const ship = {
-				x: 450,
+				x: 475,
 				y: 550,
-				width: 100,
-				height: 25,
+				width: 60,
+				height: 20,
 				deathTime: 0
 			};
 
@@ -524,7 +524,7 @@
 				lastSpecialAlienSpawn = Date.now();
 				specialAlienCooldown = Math.floor(Math.random() * 20000) + 20000;
 
-				ship.x = 450;
+				ship.x = 500 - ship.width / 2;
 				ship.y = 550;
 				leftMoving = false;
 				rightMoving = false;
@@ -561,7 +561,7 @@
 						ship.deathTime = Date.now();
 						lives--;
 						score -= 150;
-						ship.x = 450;
+						ship.x = 500 - ship.width / 2;
 						ship.y = 550;
 						if (lives <= 0) {
 							gameState = "over";
@@ -657,7 +657,7 @@
 						alien.dead = true;
 						specialAlien = false;
 					}
-					if (alien.y + alien.height >= ship.y - 15) {
+					if (alien.y + alien.height >= ship.y - 10) {
 						gameState = "over";
 						updateRecords();
 					}
@@ -967,7 +967,7 @@
 					ship.deathTime = 0;
 					ctx.fillStyle = "rgb(121, 251, 83)";
 					ctx.fillRect(ship.x, ship.y, ship.width, ship.height);
-					ctx.fillRect(ship.x + ship.width / 2 - 5, ship.y - 15, 10, 15);
+					ctx.fillRect(ship.x + ship.width / 2 - 4, ship.y - 10, 10, 10);
 				}
 
 				// Bottom line
@@ -1094,7 +1094,7 @@
 					fireTime = Date.now();
 					bullets.push({
 						x: ship.x + ship.width / 2 - 1,
-						y: ship.y - 15,
+						y: ship.y - 10,
 						width: 2,
 						height: 12,
 						dead: false

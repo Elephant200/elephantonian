@@ -356,6 +356,9 @@
 			let alienFireRate = 50000;
 			let alienSpeed = 1;
 
+			const bulletSpeed = 10;
+			const alienBulletSpeed = 5;
+
 			let aliens = [];
 			let bullets = [];
 			const ship = {
@@ -547,14 +550,14 @@
 
 			function updateBullets() {
 				bullets.forEach((bullet) => {
-					bullet.y -= 5;
+					bullet.y -= bulletSpeed;
 				});
 
 				bullets = bullets.filter((bullet) => bullet.y >= 0 && !bullet.dead);
 			}
 
 			function updateAlienBullets() {
-				enemyBullets.forEach((bullet) => (bullet.y += 5));
+				enemyBullets.forEach((bullet) => (bullet.y += alienBulletSpeed));
 				enemyBullets.forEach((bullet) => {
 					if (isColliding(bullet, ship) && !bullet.dead) {
 						bullet.dead = true;

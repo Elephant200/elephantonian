@@ -395,8 +395,8 @@
 					this.cache = null;
 				}
 
-				async fetchData(forceRefresh = false) {
-					if (this.cache && !forceRefresh) {
+				async fetchData() {
+					if (this.cache) {
 						return this.cache;
 					}
 
@@ -427,7 +427,7 @@
 							method: "PUT",
 							headers: {
 								"Content-Type": "application/json",
-								"X-Master-Key": this.apiKey
+								"X-Access-Key": this.apiKey
 							},
 							body: JSON.stringify(data)
 						});
@@ -463,19 +463,36 @@
 					return data[username] || null;
 				}
 
-				async updateUserData(username, userData) {
-					if (!username) return false;
+				async updatePersonalRecords(username, newScore, newWave, newUfos, newAccuracy) {
 					const data = await this.fetchData();
-					data[username] = userData;
+					const currentPersonal = data[username];
+					
+					if (newScore > currentPersonal.high_scores[0]) {
+						currentPersonal.high_scores[2] = currentPersonal.high_scores[1];
+						currentPersonal.high_scores[1] = currentPersonal.high_scores[0];
+						currentPersonal.high_scores[0] = newScore;
+					} else if (newScore > currentPersonal.high_scores[1]) {
+						currentPersonal.high_scores[2] = currentPersonal.high_scores[1];
+						currentPersonal.high_scores[1] = newScore;
+					} else if (newScore > currentPersonal.high_scores[2]) {
+						currentPersonal.high_scores[2] = newScore;
+					}
+					if (newWave > currentPersonal.max_wave) {
+						currentPersonal.max_wave = newWave;
+					}
+					if (newUfos > currentPersonal.max_special_aliens_shot) {
+						currentPersonal.max_special_aliens_shot = newUfos;
+					}
+					if (score >= 3200 && newAccuracy > currentPersonal.max_accuracy) {
+						currentPersonal.max_accuracy = newAccuracy;
+					}
+
+					data[username] = currentPersonal;
 					return await this.updateData(data);
 				}
 
 				async updateGlobalRecords(username, newScore, newWave, newUfos, newAccuracy) {
 					const data = await this.fetchData();
-					
-					if (!data.high_score_players) {
-						data.high_score_players = ["", "", ""];
-					}
 					
 					if (newScore > data.high_scores[0]) {
 						data.high_scores[2] = data.high_scores[1];
@@ -502,11 +519,22 @@
 						data.max_special_aliens_shot = newUfos;
 						data.max_special_aliens_shot_player = username;
 					}
-					if (newAccuracy > data.max_accuracy) {
+					if (score >= 3200 && newAccuracy > data.max_accuracy) {
 						data.max_accuracy = newAccuracy;
 						data.max_accuracy_player = username;
 					}
 
+					return await this.updateData(data);
+				}
+
+				async createUser(username) {
+					const data = await this.fetchData();
+					data[username] = {
+						high_scores: [0, 0, 0],
+						max_wave: 1,
+						max_special_aliens_shot: 0,
+						max_accuracy: 0
+					};
 					return await this.updateData(data);
 				}
 			}
@@ -763,43 +791,10 @@
 
 				const accuracy = totalBulletsShot > 0 ? Math.floor(totalAliensShot / totalBulletsShot * 100) : 0;
 				
-				if (score >= 3200) {
-					await dbManager.updateGlobalRecords(username, score, wave, specialAliensShot, accuracy);
-				} else {
-					await dbManager.updateGlobalRecords(username, score, wave, specialAliensShot, 0);
-				}
+				await dbManager.updateGlobalRecords(username, score, wave, specialAliensShot, accuracy);
+				await dbManager.updatePersonalRecords(username, score, wave, specialAliensShot, accuracy);
 
-				const currentPersonal = await dbManager.getUserData(username) || {
-					high_scores: [0, 0, 0],
-					max_wave: 1,
-					max_special_aliens_shot: 0,
-					max_accuracy: 0
-				};
-
-				if (score > currentPersonal.high_scores[0]) {
-					currentPersonal.high_scores[2] = currentPersonal.high_scores[1];
-					currentPersonal.high_scores[1] = currentPersonal.high_scores[0];
-					currentPersonal.high_scores[0] = score;
-				} else if (score > currentPersonal.high_scores[1]) {
-					currentPersonal.high_scores[2] = currentPersonal.high_scores[1];
-					currentPersonal.high_scores[1] = score;
-				} else if (score > currentPersonal.high_scores[2]) {
-					currentPersonal.high_scores[2] = score;
-				}
-
-				if (wave > currentPersonal.max_wave) {
-					currentPersonal.max_wave = wave;
-				}
-				if (specialAliensShot > currentPersonal.max_special_aliens_shot) {
-					currentPersonal.max_special_aliens_shot = specialAliensShot;
-				}
-				if (score >= 3200 && accuracy > currentPersonal.max_accuracy) {
-					currentPersonal.max_accuracy = accuracy;
-				}
-
-				await dbManager.updateUserData(username, currentPersonal);
-				
-				await loadGlobalScores(true);
+				await loadGlobalScores();
 				await loadPersonalScores();
 			}
 
@@ -1152,14 +1147,24 @@
 				}
 
 				username = usernameInput;
+
+				if (username in globalData) {
+					console.log("Username already exists");
+				} else if (!(username in globalData)) {
+					console.log("Username does not exist");
+					await dbManager.createUser(username);
+					globalData = await dbManager.fetchData();
+					personalData = await dbManager.getUserData(username);
+				}
+
 				document.getElementById("usernameContainer").style.display = "none";
 				
 				await loadPersonalScores();
 			}
 
-			async function loadGlobalScores(forceRefresh = false) {
+			async function loadGlobalScores() {
 				try {
-					globalData = await dbManager.fetchData(forceRefresh);
+					globalData = await dbManager.fetchData();
 					
 					const score1El = document.getElementById("global-score-1");
 					const score2El = document.getElementById("global-score-2");
@@ -1229,15 +1234,15 @@
 								<span class="score-value">${personalData.high_scores[2] || 0}</span>
 							</div>
 							<div class="score-item">
-								<span class="score-label">Max Wave:</span>
+								<span class="score-label">Highest Wave:</span>
 								<span class="score-value">${personalData.max_wave || 1}</span>
 							</div>
 							<div class="score-item">
-								<span class="score-label">Max UFOs Shot:</span>
+								<span class="score-label">Most UFOs Shot:</span>
 								<span class="score-value">${personalData.max_special_aliens_shot || 0}</span>
 							</div>
 							<div class="score-item">
-								<span class="score-label">Max Accuracy:</span>
+								<span class="score-label">Best Accuracy:</span>
 								<span class="score-value">${personalData.max_accuracy || 0}%</span>
 							</div>
 						`;

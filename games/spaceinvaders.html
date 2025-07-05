@@ -315,6 +315,14 @@
 						<span class="score-value" id="global-score-3">Loading...</span>
 					</div>
 					<div class="score-item">
+						<span class="score-label">#4 Score:</span>
+						<span class="score-value" id="global-score-4">Loading...</span>
+					</div>
+					<div class="score-item">
+						<span class="score-label">#5 Score:</span>
+						<span class="score-value" id="global-score-5">Loading...</span>
+					</div>
+					<div class="score-item">
 						<span class="score-label">Highest Wave:</span>
 						<span class="score-value" id="global-wave">Loading...</span>
 					</div>
@@ -446,8 +454,8 @@
 
 				getDefaultData() {
 					return {
-						high_scores: [0, 0, 0],
-						high_score_players: ["", "", ""],
+						high_scores: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						high_score_players: ["", "", "", "", "", "", "", "", "", ""],
 						max_wave: 1,
 						max_wave_player: "",
 						max_special_aliens_shot: 0,
@@ -467,16 +475,16 @@
 					const data = await this.fetchData();
 					const currentPersonal = data[username];
 					
-					if (newScore > currentPersonal.high_scores[0]) {
-						currentPersonal.high_scores[2] = currentPersonal.high_scores[1];
-						currentPersonal.high_scores[1] = currentPersonal.high_scores[0];
-						currentPersonal.high_scores[0] = newScore;
-					} else if (newScore > currentPersonal.high_scores[1]) {
-						currentPersonal.high_scores[2] = currentPersonal.high_scores[1];
-						currentPersonal.high_scores[1] = newScore;
-					} else if (newScore > currentPersonal.high_scores[2]) {
-						currentPersonal.high_scores[2] = newScore;
+					for (let i = 0; i < currentPersonal.high_scores.length; i++) {
+						if (newScore > currentPersonal.high_scores[i]) {
+							for (let j = currentPersonal.high_scores.length - 1; j > i; j--) {
+								currentPersonal.high_scores[j] = currentPersonal.high_scores[j - 1];
+							}
+							currentPersonal.high_scores[i] = newScore;
+							break;
+						}
 					}
+
 					if (newWave > currentPersonal.max_wave) {
 						currentPersonal.max_wave = newWave;
 					}
@@ -494,21 +502,16 @@
 				async updateGlobalRecords(username, newScore, newWave, newUfos, newAccuracy) {
 					const data = await this.fetchData();
 					
-					if (newScore > data.high_scores[0]) {
-						data.high_scores[2] = data.high_scores[1];
-						data.high_scores[1] = data.high_scores[0];
-						data.high_scores[0] = newScore;
-						data.high_score_players[2] = data.high_score_players[1];
-						data.high_score_players[1] = data.high_score_players[0];
-						data.high_score_players[0] = username;
-					} else if (newScore > data.high_scores[1]) {
-						data.high_scores[2] = data.high_scores[1];
-						data.high_scores[1] = newScore;
-						data.high_score_players[2] = data.high_score_players[1];
-						data.high_score_players[1] = username;
-					} else if (newScore > data.high_scores[2]) {
-						data.high_scores[2] = newScore;
-						data.high_score_players[2] = username;
+					for (let i = 0; i < data.high_scores.length; i++) {
+						if (newScore > data.high_scores[i]) {
+							for (let j = data.high_scores.length - 1; j > i; j--) {
+								data.high_scores[j] = data.high_scores[j - 1];
+								data.high_score_players[j] = data.high_score_players[j - 1];
+							}
+							data.high_scores[i] = newScore;
+							data.high_score_players[i] = username;
+							break;
+						}
 					}
 
 					if (newWave > data.max_wave) {
@@ -530,7 +533,7 @@
 				async createUser(username) {
 					const data = await this.fetchData();
 					data[username] = {
-						high_scores: [0, 0, 0],
+						high_scores: [0, 0, 0, 0, 0],
 						max_wave: 1,
 						max_special_aliens_shot: 0,
 						max_accuracy: 0
@@ -1148,10 +1151,8 @@
 
 				username = usernameInput;
 
-				if (username in globalData) {
-					console.log("Username already exists");
-				} else if (!(username in globalData)) {
-					console.log("Username does not exist");
+				if (!(username in globalData)) {
+					console.log("Creating user...");
 					await dbManager.createUser(username);
 					globalData = await dbManager.fetchData();
 					personalData = await dbManager.getUserData(username);
@@ -1166,44 +1167,38 @@
 				try {
 					globalData = await dbManager.fetchData();
 					
-					const score1El = document.getElementById("global-score-1");
-					const score2El = document.getElementById("global-score-2");
-					const score3El = document.getElementById("global-score-3");
+					
+					let scoreEls = [];
+					for (let i = 1; i <= 5; i++) {
+						scoreEls.push(document.getElementById(`global-score-${i}`));
+					}
 					const waveEl = document.getElementById("global-wave");
 					const ufosEl = document.getElementById("global-ufos");
 					const accuracyEl = document.getElementById("global-accuracy");
 					
-					score1El.textContent = globalData.high_scores[0] || 0;
-					score2El.textContent = globalData.high_scores[1] || 0;
-					score3El.textContent = globalData.high_scores[2] || 0;
+					for (let i = 0; i < scoreEls.length; i++) {
+						scoreEls[i].textContent = globalData.high_scores[i] || 0;
+					}
 					waveEl.textContent = globalData.max_wave || 1;
 					ufosEl.textContent = globalData.max_special_aliens_shot || 0;
 					accuracyEl.textContent = `${globalData.max_accuracy || 0}%`;
 					
 					if (globalData.high_score_players) {
-						if (globalData.high_score_players[0]) {
-							score1El.title = `Achieved by: ${globalData.high_score_players[0]}`;
-							score1El.setAttribute('data-tooltip', `Achieved by: ${globalData.high_score_players[0]}`);
-						}
-						if (globalData.high_score_players[1]) {
-							score2El.title = `Achieved by: ${globalData.high_score_players[1]}`;
-							score2El.setAttribute('data-tooltip', `Achieved by: ${globalData.high_score_players[1]}`);
-						}
-						if (globalData.high_score_players[2]) {
-							score3El.title = `Achieved by: ${globalData.high_score_players[2]}`;
-							score3El.setAttribute('data-tooltip', `Achieved by: ${globalData.high_score_players[2]}`);
+						for (let i = 0; globalData.high_score_players[i] !== "" && i < scoreEls.length; i++) {
+							scoreEls[i].title = `Achieved by: ${globalData.high_score_players[i]}`;
+							scoreEls[i].setAttribute('data-tooltip', `Achieved by: ${globalData.high_score_players[i]}`);
 						}
 					}
 					
-					if (globalData.max_wave_player) {
+					if (globalData.max_wave_player !== "") {
 						waveEl.title = `Achieved by: ${globalData.max_wave_player}`;
 						waveEl.setAttribute('data-tooltip', `Achieved by: ${globalData.max_wave_player}`);
 					}
-					if (globalData.max_special_aliens_shot_player) {
+					if (globalData.max_special_aliens_shot_player !== "") {
 						ufosEl.title = `Achieved by: ${globalData.max_special_aliens_shot_player}`;
 						ufosEl.setAttribute('data-tooltip', `Achieved by: ${globalData.max_special_aliens_shot_player}`);
 					}
-					if (globalData.max_accuracy_player) {
+					if (globalData.max_accuracy_player !== "") {
 						accuracyEl.title = `Achieved by: ${globalData.max_accuracy_player}`;
 						accuracyEl.setAttribute('data-tooltip', `Achieved by: ${globalData.max_accuracy_player}`);
 					}
@@ -1232,6 +1227,14 @@
 							<div class="score-item">
 								<span class="score-label">#3 Score:</span>
 								<span class="score-value">${personalData.high_scores[2] || 0}</span>
+							</div>
+							<div class="score-item">
+								<span class="score-label">#4 Score:</span>
+								<span class="score-value">${personalData.high_scores[3] || 0}</span>
+							</div>
+							<div class="score-item">
+								<span class="score-label">#5 Score:</span>
+								<span class="score-value">${personalData.high_scores[4] || 0}</span>
 							</div>
 							<div class="score-item">
 								<span class="score-label">Highest Wave:</span>

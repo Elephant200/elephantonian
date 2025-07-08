@@ -186,7 +186,7 @@
 	<br/>
 	<script>
 	    currentPage = window.location.pathname.split('/').pop();
-		$(document).ready(function() {
+		$(document).ready(function($) {
 			$.get("navbar.html", function(data) {
 				$("#navbar").replaceWith(data);
 			});

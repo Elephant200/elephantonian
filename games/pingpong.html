@@ -36,7 +36,7 @@
     
     #menu {
       text-align: center;
-      margin-bottom: 20px;
+      margin: 20px;
     }
     
     .btn {
@@ -78,7 +78,6 @@
     
     #difficulty-menu {
       display: none;
-      margin-top: 20px;
     }
     
     #controls {
@@ -96,7 +95,6 @@
     canvas {
       border: 3px solid white;
       border-radius: 10px;
-      max-height: calc(100vh - 200px);
     }
   </style>
 </head>
@@ -105,26 +103,25 @@
   
   <div id="game-container">
     <h1>Ping Pong Game</h1>
-    
+
+    <hr id="divider" style="width: 50%; color: white; opacity: 0.5; height: 2px; background-color: white; margin: 10px;">
+
     <div id="menu">
       <button class="btn btn-primary" onclick="startSinglePlayer()">Single Player</button>
       <button class="btn btn-success" onclick="startTwoPlayer()">Two Player</button>
       
       <div id="difficulty-menu">
-        <h3>Choose Difficulty:</h3>
         <button class="btn btn-success" onclick="startGame('easy')">Easy</button>
         <button class="btn btn-warning" onclick="startGame('medium')">Medium</button>
         <button class="btn btn-danger" onclick="startGame('hard')">Hard</button>
       </div>
     </div>
     
-    <div id="score"></div>
-    
     <div id="controls">
       <p><strong>Controls:</strong></p>
       <p>Player 1: W (up) / S (down)</p>
       <p>Player 2: Arrow Keys (up/down)</p>
-      <p>Press R to restart | Press SPACEBAR to pause | Press ESC to return to menu</p>
+      <p>Press R to restart | Press SPACEBAR or ESC to pause</p>
     </div>
   </div>
 
@@ -140,9 +137,10 @@
     let paddle1Velocity = 0, paddle2Velocity = 0;
     
     function setup() {
-      let canvas = createCanvas(800, 400);
+      let canvas = createCanvas(1000, 500);
       canvas.parent('game-container');
       canvas.hide();
+      scaleCanvas();
       
       // Initialize game objects
       ball = {
@@ -151,11 +149,11 @@
         vx: 5,
         vy: 3,
         size: 20,
-        reset: function() {
+        reset: function(right) {
           this.x = width / 2;
           this.y = height / 2;
-          this.vx = random() > 0.5 ? 5 : -5;
-          this.vy = random(-3, 3);
+          this.vx = right ? 5 : -5;
+          this.vy = random(-2, 2);
         }
       };
       
@@ -183,6 +181,13 @@
       if (!gameStarted) return;
       
       background(34, 139, 34);
+
+      // Draw center line
+      stroke(255);
+      strokeWeight(3);
+      for (let i = 0; i < height; i += 20) {
+        line(width / 2, i, width / 2, i + 10);
+      }
       
       // Handle pause state
       if (gamePaused) {
@@ -192,22 +197,15 @@
         drawScore();
         
         // Draw pause message
-        fill(255, 255, 255, 200);
+        fill(255, 255, 255, 150);
         rect(0, 0, width, height);
         fill(0);
         textAlign(CENTER);
         textSize(48);
-        text("PAUSED", width / 2, height / 2);
+        text("PAUSED", width / 2, height / 2 - 48);
         textSize(24);
-        text("Press SPACEBAR to resume", width / 2, height / 2 + 50);
+        text("Press SPACEBAR to resume\nPress ESC to return to menu", width / 2, height / 2);
         return;
-      }
-      
-      // Draw center line
-      stroke(255);
-      strokeWeight(3);
-      for (let i = 0; i < height; i += 20) {
-        line(width / 2, i, width / 2, i + 10);
       }
       
       // Update ball
@@ -286,12 +284,10 @@
         let paddleCenter = paddle2.y + paddle2.h / 2;
         let diff = ball.y - paddleCenter;
         
-        if (abs(diff) > 5) {
-          if (diff > 0) {
-            paddle2.y += aiSpeed;
-          } else {
-            paddle2.y -= aiSpeed;
-          }
+        if (diff > 0) {
+          paddle2.y += Math.min(diff, aiSpeed);
+        } else if (diff < 0) {
+          paddle2.y -= Math.min(-diff, aiSpeed);
         }
       }
       
@@ -328,24 +324,18 @@
     function checkScore() {
       if (ball.x < 0) {
         score2++;
-        ball.reset();
-        updateScoreDisplay();
+        ball.reset(false);
       }
       
       if (ball.x > width) {
         score1++;
-        ball.reset();
-        updateScoreDisplay();
+        ball.reset(true);
       }
       
       // Check for game end
       if (score1 >= 11 || score2 >= 11) {
         endGame();
       }
-    }
-    
-    function updateScoreDisplay() {
-      document.getElementById('score').innerHTML = `Player 1: ${score1} | Player 2: ${score2}`;
     }
     
     function startSinglePlayer() {
@@ -379,15 +369,16 @@
         }
       }
       
-      // Hide menu and show game
+      // Hide menu and controls then show game
       document.getElementById('menu').style.display = 'none';
+      document.getElementById('controls').style.display = 'none';
+      document.getElementById('divider').style.display = 'none';
       document.querySelector('canvas').style.display = 'block';
       
       // Reset game state
       score1 = 0;
       score2 = 0;
-      ball.reset();
-      updateScoreDisplay();
+      ball.reset(true);
     }
     
     function endGame() {
@@ -403,10 +394,23 @@
       gamePaused = false;
       document.getElementById('menu').style.display = 'block';
       document.getElementById('difficulty-menu').style.display = 'none';
+      document.getElementById('controls').style.display = 'block';
       document.querySelector('.btn-primary').style.display = 'inline-block';
       document.querySelector('.btn-success').style.display = 'inline-block';
       document.querySelector('canvas').style.display = 'none';
-      document.getElementById('score').innerHTML = '';
+    }
+
+    function scaleCanvas() {
+      const canvas = document.querySelector('canvas');
+      const container = document.getElementById('game-container');
+      if (!canvas) return;
+      const scaleFactor = (container.innerHeight * 0.7) / 500;
+      canvas.style.transform = `scale(${scaleFactor})`;
+      canvas.style.transformOrigin = 'center';
+    }
+
+    function windowResized() {
+      scaleCanvas();
     }
     
     function keyPressed() {
@@ -421,31 +425,37 @@
         }
         return false;
       }
+      if (key === 'Escape') {
+        if (!gamePaused) {
+          gamePaused = true;
+        } else if (gamePaused) {
+          resetToMenu();
+        } else if (!gameStarted) {
+          resetToMenu();
+        }
+        return false;
+      }
       
       // Restart game
       if (key === 'r' || key === 'R') {
         if (gameStarted) {
           score1 = 0;
           score2 = 0;
-          ball.reset();
-          updateScoreDisplay();
+          ball.reset(true);
           gamePaused = false;
         }
-      }
-      
-      // Return to menu
-      if (keyCode === ESCAPE) {
-        resetToMenu();
       }
     }
   </script>
 
   <script>
+    currentPage = window.location.pathname.split('/').pop();
     $(document).ready(function() {
       $.get("navbar.html", function(data) {
         $("#navbar").replaceWith(data);
       });
     });
+    $(`#navbar a.nav-link[href="${currentPage}"]`).addClass('nav-link-current');
   </script>
 </body>
 </html>

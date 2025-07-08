@@ -109,6 +109,11 @@ main p {
 	color: green;
 }
 
+.nav-link-current {
+	color: blue !important;
+	font-weight: bold;
+}
+
 /* Tooltip container */
 .navbar-games {
   position: relative;

@@ -4,7 +4,7 @@
 }
 
 html {
-		scroll-behavior: smooth;
+	scroll-behavior: smooth;
 }
 
 body {
@@ -119,6 +119,10 @@ main p {
 #hangman {
 	padding: 20px;
 	color: green;
+}
+
+.nav-link-current {
+	color: blue;
 }
 
 /* Tooltip container */

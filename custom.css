@@ -121,8 +121,24 @@ main p {
 	color: green;
 }
 
+.nav-link {
+	color: navy !important;
+}
+.nav-link:hover {
+	transition: color 0.5s ease;
+	color: blue !important;
+}
+
 .nav-link-current {
-	color: blue;
+	font-weight: bold;
+	text-decoration: underline;
+	text-underline-offset: 4px;
+}
+
+.nav-link-current:hover {
+	transition: color 0.5s ease;
+	text-decoration: underline;
+	text-underline-offset: 4px;
 }
 
 /* Tooltip container */
@@ -235,15 +251,3 @@ main p {
 .hover-dropdown-menu .dropdown-item {
 	transition: background-color 0.2s ease;
 }
-
-/*
-.active {
-	color: blue !important;
-}
-.navbar-brand {
-	color: blue !important;
-}
-.nav-item {
-	color: navy !important;
-}
-*/

@@ -109,9 +109,24 @@ main p {
 	color: green;
 }
 
-.nav-link-current {
+.nav-link {
+	color: navy !important;
+}
+.nav-link:hover {
+	transition: color 0.5s ease;
 	color: blue !important;
+}
+
+.nav-link-current {
 	font-weight: bold;
+	text-decoration: underline;
+	text-underline-offset: 4px;
+}
+
+.nav-link-current:hover {
+	transition: color 0.5s ease;
+	text-decoration: underline;
+	text-underline-offset: 4px;
 }
 
 /* Tooltip container */

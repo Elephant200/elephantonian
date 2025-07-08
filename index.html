@@ -22,7 +22,7 @@
 
 </head>
 <body>
-	<div id="navbar"></div>
+	<div id="navbar-placeholder"></div>
 	<div class = "BODY">
 		<br/><br/>
 		<div class = "container" style = "width: 50%">
@@ -162,18 +162,16 @@
 						    <img src = "static/elephants/22.png" style = "width: 100%;">
 					    </div>
 					</div>
-
-
-
-					<a class = "carousel-control-prev" href = "#myCarousel" role = "button" data-slide = "prev">
-						<span class = "carousel-control-prev-icon" aria-hidden = "true"></span>
-						<span class = "sr-only">Previous</span>
-					</a>
-					<a class = "carousel-control-next" href = "#myCarousel" role = "button" data-slide = "next">
-						<span class = "carousel-control-next-icon" aria-hidden = "true"></span>
-						<span class = "sr-only">Next</span>
-					</a>
 				</div>
+
+				<a class = "carousel-control-prev" href = "#myCarousel" role = "button" data-slide = "prev">
+					<span class = "carousel-control-prev-icon" aria-hidden = "true"></span>
+					<span class = "sr-only">Previous</span>
+				</a>
+				<a class = "carousel-control-next" href = "#myCarousel" role = "button" data-slide = "next">
+					<span class = "carousel-control-next-icon" aria-hidden = "true"></span>
+					<span class = "sr-only">Next</span>
+				</a>
 			</div>
 		</div>
 		<br/>
@@ -185,12 +183,13 @@
 	</div>
 	<br/>
 	<script>
-	    currentPage = window.location.pathname.split('/').pop();
+	    currentPage = window.location.pathname.split('/').pop() || "index.html";
 		$(document).ready(function($) {
+			console.log(currentPage);
 			$.get("navbar.html", function(data) {
-				$("#navbar").replaceWith(data);
+				$("#navbar-placeholder").replaceWith(data);
+				$(`a.nav-link[href="${currentPage}"]`).addClass('nav-link-current');
 			});
-			$(`#navbar a.nav-link[href="${currentPage}"]`).addClass('nav-link-current');
 		});
     </script>
 

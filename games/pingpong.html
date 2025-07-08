@@ -448,16 +448,6 @@
     }
   </script>
 
-<script>
-  currentPage = window.location.pathname.split('/').pop() || "index.html";
-  $(document).ready(function($) {
-    console.log(currentPage);
-    $.get("navbar.html", function(data) {
-      $("#navbar-placeholder").replaceWith(data);
-      $(`a.dropdown-item[href="${currentPage}"]`).addClass('nav-link-current');
-      $("a.nav-link[href='../games.html']").addClass('nav-link-current');
-    });
-  });
-  </script>
+  <script src="/static/navbar-loader.js"></script>
 </body>
 </html>

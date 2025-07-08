@@ -1275,8 +1275,8 @@
 				$.get("navbar.html", function(data) {
 					$("#navbar").replaceWith(data);
 				});
+				$(`#navbar a.dropdown-item[href="${currentPage}"]`).addClass('nav-link-current');
 			});
-			$(`#navbar a.dropdown-item[href="${currentPage}"]`).addClass('nav-link-current');
 		</script>
 		
 		<!--Bootstrap javascript-->

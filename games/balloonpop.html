@@ -66,8 +66,9 @@
 				$("#navbar").replaceWith(data);
 			});
 		});
-		$(`#navbar a.nav-link[href="${currentPage}"]`).addClass('nav-link-current');
+		$(`#navbar a.dropdown-item[href="${currentPage}"]`).addClass('nav-link-current');
 	</script>
+	
 	<script>
 		function randint(min, max) {
 			return Math.floor(Math.random() * max) + min;

@@ -15,15 +15,13 @@
 <body>
 	<div id="navbar"></div>
 	<script>
-	    $(document).ready(function($) {
-	        
-            setTimeout(() => {
-            	$.get("navbar.html", function(data) {
-            		$("#navbar").replaceWith(data);
-            	});
-            },500)
-
-	    });
+	    currentPage = window.location.pathname.split('/').pop();
+		$(document).ready(function() {
+			$.get("navbar.html", function(data) {
+				$("#navbar").replaceWith(data);
+			});
+		});
+		$(`#navbar a.nav-link[href="${currentPage}"]`).addClass('nav-link-current');
 	</script>
 	<br/>
 	<!--

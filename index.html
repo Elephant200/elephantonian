@@ -185,12 +185,17 @@
 	</div>
 	<br/>
 	<script>
-		$(document).ready(function($) {
-            
-            $.get("navbar.html", function(data) {
-            	$("#navbar").replaceWith(data);
-            });
-            	    
+	    currentPage = window.location.pathname.split('/').pop();
+		$(document).ready(function() {
+			$.get("navbar.html", function(data) {
+				$("#navbar").replaceWith(data);
+			});
+		});
+		$(`#navbar a.nav-link[href="${currentPage}"]`).addClass('nav-link-current');
+    </script>
+
+	<script>
+        $(document).ready(function($) { 
 			function normalizeSlideHeights() {
 				$('.carousel').each(function(){
 					var items = $('.carousel-item', this);

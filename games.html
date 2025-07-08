@@ -199,12 +199,14 @@
 	</div>
 
 	<script>
-		$(document).ready(function($) {
+	    currentPage = window.location.pathname.split('/').pop();
+		$(document).ready(function() {
 			$.get("navbar.html", function(data) {
 				$("#navbar").replaceWith(data);
 			});
 		});
-	</script>
+		$(`#navbar a.nav-link[href="${currentPage}"]`).addClass('nav-link-current');
+    </script>
 
 	<!--Bootstrap javascript-->
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

@@ -56,6 +56,7 @@
     
     .btn-primary:hover {
       background-color: #2980b9;
+      color: white;
     }
     
     .btn-success {
@@ -65,6 +66,7 @@
     
     .btn-success:hover {
       background-color: #229954;
+      color: white;
     }
     
     .btn-warning {
@@ -74,6 +76,17 @@
     
     .btn-warning:hover {
       background-color: #e67e22;
+      color: white;
+    }
+    
+    .btn-insane {
+      background-color: #8b0000;
+      color: white;
+    }
+    
+    .btn-insane:hover {
+      background-color: #660000;
+      color: white;
     }
     
     #difficulty-menu {
@@ -114,6 +127,7 @@
         <button class="btn btn-success" onclick="startGame('easy')">Easy</button>
         <button class="btn btn-warning" onclick="startGame('medium')">Medium</button>
         <button class="btn btn-danger" onclick="startGame('hard')">Hard</button>
+        <button class="btn btn-insane" onclick="startGame('insane')">Insane</button>
       </div>
     </div>
     
@@ -129,12 +143,15 @@
     let ball, paddle1, paddle2;
     let gameStarted = false;
     let gamePaused = false;
+    let gameOver = false;
     let gameMode = '';
     let difficulty = '';
     let score1 = 0, score2 = 0;
     let aiSpeed = 3;
     let paddle1PrevY = 0, paddle2PrevY = 0;
     let paddle1Velocity = 0, paddle2Velocity = 0;
+    let maxSpeedX = 10;
+    let maxSpeedY = 10;
     
     function setup() {
       let canvas = createCanvas(1000, 500);
@@ -176,7 +193,7 @@
       paddle2PrevY = paddle2.y;
     }
     
-    function draw() {
+    function draw(scoreCheck = true) {
       if (!gameStarted) return;
       
       background(34, 139, 34);
@@ -187,14 +204,14 @@
       for (let i = 0; i < height; i += 20) {
         line(width / 2, i, width / 2, i + 10);
       }
+
+      // Draw game objects
+      drawBall();
+      drawPaddles();
+      drawScore();
       
       // Handle pause state
       if (gamePaused) {
-        // Draw game objects in paused state
-        drawBall();
-        drawPaddles();
-        drawScore();
-        
         // Draw pause message
         fill(255, 255, 255, 150);
         rect(0, 0, width, height);
@@ -213,13 +230,10 @@
       // Update paddles
       updatePaddles();
       
-      // Draw game objects
-      drawBall();
-      drawPaddles();
-      drawScore();
-      
-      // Check for scoring
-      checkScore();
+      if (scoreCheck) {
+        // Check for scoring
+        checkScore();
+      }
     }
     
     function updateBall() {
@@ -234,25 +248,27 @@
       }
       
       // Paddle collision with spin mechanics
-      if (ball.x - ball.size/2 <= paddle1.x + paddle1.w && 
+      if (ball.x - ball.size/2 <= paddle1.x + paddle1.w &&
+          ball.x - ball.size/2 >= paddle1.x &&
           ball.y >= paddle1.y && ball.y <= paddle1.y + paddle1.h && 
           ball.vx < 0) {
-        ball.vx *= -1.05; // Slight speed increase
-        ball.vy += paddle1Velocity * 0.3; // Add spin based on paddle movement
-        ball.vy += random(-0.5, 0.5);
+        ball.vx *= -1.03;
+        ball.vy += paddle1Velocity * 0.3;
+        ball.vy += random(-0.2, 0.2);
       }
       
       if (ball.x + ball.size/2 >= paddle2.x && 
+          ball.x + ball.size/2 <= paddle2.x + paddle2.w &&
           ball.y >= paddle2.y && ball.y <= paddle2.y + paddle2.h && 
           ball.vx > 0) {
-        ball.vx *= -1.05; // Slight speed increase
-        ball.vy += paddle2Velocity * 0.3; // Add spin based on paddle movement
-        ball.vy += random(-0.5, 0.5);
+        ball.vx *= -1.03;
+        ball.vy += paddle2Velocity * 0.3;
+        ball.vy += random(-0.2, 0.2);
       }
       
       // Limit ball speed
-      ball.vx = constrain(ball.vx, -10, 10);
-      ball.vy = constrain(ball.vy, -8, 8);
+      ball.vx = constrain(ball.vx, -maxSpeedX, maxSpeedX);
+      ball.vy = constrain(ball.vy, -maxSpeedY, maxSpeedY);
     }
     
     function updatePaddles() {
@@ -323,17 +339,22 @@
     function checkScore() {
       if (ball.x < 0) {
         score2++;
+        if (score2 >= 6) {
+          draw(false);
+          endGame();
+          return;
+        }
         ball.reset(false);
       }
       
       if (ball.x > width) {
         score1++;
+        if (score1 >= 6) {
+          draw(false);
+          endGame();
+          return;
+        }
         ball.reset(true);
-      }
-      
-      // Check for game end
-      if (score1 >= 11 || score2 >= 11) {
-        endGame();
       }
     }
     
@@ -352,18 +373,31 @@
     function startGame(diff) {
       difficulty = diff;
       gameStarted = true;
+      gameOver = false;
+      gamePaused = false;
       
       // Set AI difficulty
       if (gameMode === 'singlePlayer') {
         switch(difficulty) {
           case 'easy':
             aiSpeed = 2;
+            maxSpeedX = 9;
+            maxSpeedY = 6;
             break;
           case 'medium':
             aiSpeed = 4;
+            maxSpeedX = 12;
+            maxSpeedY = 8;
             break;
           case 'hard':
             aiSpeed = 6;
+            maxSpeedX = 15;
+            maxSpeedY = 10;
+            break;
+          case 'insane':
+            aiSpeed = 8;
+            maxSpeedX = 18;
+            maxSpeedY = 12;
             break;
         }
       }
@@ -377,23 +411,36 @@
       // Reset game state
       score1 = 0;
       score2 = 0;
+      paddle1.y = height / 2 - 50;
+      paddle2.y = height / 2 - 50;
       ball.reset(true);
     }
     
     function endGame() {
       gameStarted = false;
       gamePaused = false;
-      let winner = score1 >= 11 ? 'Player 1' : 'Player 2';
-      alert(`${winner} wins!`);
-      resetToMenu();
+      gameOver = true;
+      let winner = score1 >= 6 ? 'Player 1' : 'Player 2';
+      fill(255, 255, 255, 200);
+      rect(0, 0, width, height);
+      fill(0);
+      textAlign(CENTER);
+      textSize(48);
+      text("GAME OVER", width / 2, height / 2 - 64);
+      textSize(32);
+      text(`${winner} wins!`, width / 2, height / 2 - 10);
+      textSize(24);
+      text("Press SPACEBAR to restart\nPress ESC to return to menu", width / 2, height / 2 + 48);
     }
     
     function resetToMenu() {
       gameStarted = false;
       gamePaused = false;
+      gameOver = false;
       document.getElementById('menu').style.display = 'block';
       document.getElementById('difficulty-menu').style.display = 'none';
       document.getElementById('controls').style.display = 'block';
+      document.getElementById('divider').style.display = 'block';
       document.querySelector('.btn-primary').style.display = 'inline-block';
       document.querySelector('.btn-success').style.display = 'inline-block';
       document.querySelector('canvas').style.display = 'none';
@@ -408,15 +455,15 @@
       if (key === ' ') {
         if (gameStarted) {
           gamePaused = !gamePaused;
+        } else if (gameOver) {
+          startGame(difficulty);
         }
         return false;
       }
       if (key === 'Escape') {
-        if (!gamePaused) {
+        if (gameStarted && !gamePaused) {
           gamePaused = true;
-        } else if (gamePaused) {
-          resetToMenu();
-        } else if (!gameStarted) {
+        } else if (gamePaused || gameOver || !gameStarted) {
           resetToMenu();
         }
         return false;
@@ -424,11 +471,10 @@
       
       // Restart game
       if (key === 'r' || key === 'R') {
-        if (gameStarted) {
-          score1 = 0;
-          score2 = 0;
-          ball.reset(true);
-          gamePaused = false;
+        if (gameStarted || gameOver) {
+          paddle1.y = height / 2 - 50;
+          paddle2.y = height / 2 - 50;
+          startGame(difficulty);
         }
       }
     }

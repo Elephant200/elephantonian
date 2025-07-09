@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset = "utf-8">
+		<meta name = "viewport" content = "width=device-width,initial-scale=1">
+		<title>Pacman | Games | Elephantonian</title>
+		<!--CSS for Bootstrap CDN: this will import all of the bootstrap styles-->
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<link rel = "stylesheet" href = "custom.css">
+		<link rel = "icon" href = "../static/logo.png">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+		<script src="https://code.jquery.com/jquery-git.js"></script>
+		<style>
+			html, body {
+				height: 100%;
+				width: 100%;
+				margin: 0;
+				padding: 0;
+				background-color: navy;
+			}
+			
+			#gameScreen {
+				border: 1px solid white;
+                margin: 10px auto;
+				height: auto;
+				padding: 0px;
+                display: block;
+				transform: scale(0.75);
+				transform-origin: top;
+				margin-bottom: -160px;
+			}
+            
+            #game-container {
+                overflow: hidden;
+            }
+			
+			img {
+				display:none;
+			}
+			
+		</style>
+	</head>
+
+	<body>
+        <div id="navbar-placeholder"></div>
+
+		<img id="blinkie" src="/static/games/pacman/images/Blinkie.png">
+		<img id="clyde" src="/static/games/pacman/images/Clyde.png">
+		<img id="inkie" src="/static/games/pacman/images/Inkie.png">
+		<img id="pinkie" src="/static/games/pacman/images/Pinkie.png">
+		<img id="blinkieEaten" src="/static/games/pacman/images/Blinkie eaten.png">
+		<img id="clydeEaten" src="/static/games/pacman/images/Clyde eaten.png">
+		<img id="inkieEaten" src="/static/games/pacman/images/Inkie eaten.png">
+		<img id="pinkieEaten" src="/static/games/pacman/images/Pinkie eaten.png">
+		<img id="scared" src="/static/games/pacman/images/Vulnerable Ghost.png">
+        <div id="game-container">
+		    <canvas id="gameScreen" height=793 width=1037></canvas>
+        </div>
+		
+        <script src="/static/js/navbar-loader.js"></script>
+
+		<script src="/static/games/pacman/js/index.js" type="module"></script>
+	</body>
+</html>

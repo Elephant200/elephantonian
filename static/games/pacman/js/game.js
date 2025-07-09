@@ -155,26 +155,26 @@ export default class Game {
 
     if (this.gamestate === GAMESTATE.GAMEOVER) {
       ctx.rect(0, 0, this.gameWidth, this.gameHeight);
-      ctx.fillStyle = "rgba(100, 0, 0, 1)";
+      ctx.fillStyle = "rgba(0, 75, 200, 0.75)";
       ctx.fill();
 
-      ctx.font = "400px monospace";
-      ctx.fillStyle = "rgb(186,36,50)";
+      ctx.font = "100px monospace";
+      ctx.fillStyle = "white";
       ctx.textAlign = "center";
-      ctx.fillText("RIP", this.gameWidth / 2, 250);
+      ctx.fillText("Game Over", this.gameWidth / 2, 200);
+      ctx.font = "50px monospace";
+      ctx.fillStyle = "white";
+      ctx.textAlign = "center";
+      ctx.fillText(
+        `Final Score: ${this.score}`,
+        this.gameWidth / 2,
+        this.gameHeight / 2
+      );
       ctx.font = "30px monospace";
       ctx.fillStyle = "white";
       ctx.textAlign = "center";
       ctx.fillText(
-        "The ghosts killed you.",
-        this.gameWidth / 2,
-        this.gameHeight / 2
-      );
-      ctx.font = "20px monospace";
-      ctx.fillStyle = "white";
-      ctx.textAlign = "center";
-      ctx.fillText(
-        "(Good Riddance)",
+        "Reload to play again",
         this.gameWidth / 2,
         this.gameHeight / 2 + 50
       );

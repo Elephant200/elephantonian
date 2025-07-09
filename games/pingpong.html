@@ -140,7 +140,6 @@
       let canvas = createCanvas(1000, 500);
       canvas.parent('game-container');
       canvas.hide();
-      scaleCanvas();
       
       // Initialize game objects
       ball = {
@@ -399,19 +398,6 @@
       document.querySelector('.btn-success').style.display = 'inline-block';
       document.querySelector('canvas').style.display = 'none';
     }
-
-    function scaleCanvas() {
-      const canvas = document.querySelector('canvas');
-      const container = document.getElementById('game-container');
-      if (!canvas) return;
-      const scaleFactor = (container.innerHeight * 0.7) / 500;
-      canvas.style.transform = `scale(${scaleFactor})`;
-      canvas.style.transformOrigin = 'center';
-    }
-
-    function windowResized() {
-      scaleCanvas();
-    }
     
     function keyPressed() {
       if (keyCode === UP_ARROW || keyCode === DOWN_ARROW) {
@@ -448,6 +434,6 @@
     }
   </script>
 
-  <script src="/static/navbar-loader.js"></script>
+  <script src="/static/js/navbar-loader.js"></script>
 </body>
 </html>
